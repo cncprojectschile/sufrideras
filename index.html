@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sufrideras Eurohinca 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 /* ── AUTH LAYER ───────────────────────────────────── */
 #auth-layer {
@@ -592,7 +591,7 @@
   <div class="auth-box">
     <div class="auth-logo-tag">Registro de Obra · 2026</div>
     <div class="auth-title">Sufrideras</div>
-    <div class="auth-subtitle">Acceso privado · Ingresa tus credenciales</div>
+    <div class="auth-subtitle" id="auth-subtitle">Acceso privado · Ingresa tus credenciales</div>
 
     <!-- LOGIN PANEL -->
     <div class="auth-panel active" id="panel-login">
@@ -606,38 +605,6 @@
         <input class="auth-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
       </div>
       <button class="auth-btn auth-btn-primary" onclick="doLogin()">Entrar</button>
-      <div class="auth-link" onclick="switchPanel('panel-forgot')">
-        ¿Olvidaste tu contraseña? <span>Recuperar</span>
-      </div>
-    </div>
-
-    <!-- FORGOT PASSWORD PANEL -->
-    <div class="auth-panel" id="panel-forgot">
-      <div class="auth-error" id="forgot-error"></div>
-      <div class="auth-success" id="forgot-success"></div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.6;">
-        Ingresa tu correo registrado y te enviaremos un código de recuperación.
-      </p>
-      <div class="auth-form-group">
-        <label class="auth-label">Correo electrónico</label>
-        <input class="auth-input" id="forgot-email" type="email" placeholder="correo@ejemplo.com">
-      </div>
-      <button class="auth-btn auth-btn-primary" id="forgot-btn" onclick="doForgot()">Enviar código</button>
-      <div class="auth-divider"></div>
-      <div class="auth-form-group">
-        <label class="auth-label">Código recibido</label>
-        <input class="auth-input" id="forgot-code" placeholder="Ej: 847291" autocomplete="off">
-      </div>
-      <div class="auth-form-group">
-        <label class="auth-label">Nueva contraseña</label>
-        <input class="auth-input" id="forgot-newpass" type="password" placeholder="Nueva contraseña">
-      </div>
-      <button class="auth-btn auth-btn-primary" onclick="doResetPassword()">Cambiar contraseña</button>
-      <div class="auth-link" onclick="switchPanel('panel-login')">← Volver al login</div>
-      <div class="emailjs-notice">
-        Servicio de correo por <a href="https://www.emailjs.com" target="_blank">EmailJS</a>.<br>
-        Configura tus credenciales en Ajustes → EmailJS.
-      </div>
     </div>
   </div>
 </div>
@@ -648,7 +615,6 @@
     <div class="modal-title">⚙️ Ajustes de cuenta</div>
     <div class="settings-tabs">
       <button class="settings-tab active" onclick="settingsTab('tab-password')">🔑 Contraseña</button>
-      <button class="settings-tab" onclick="settingsTab('tab-emailjs')">📧 EmailJS</button>
       <button class="settings-tab" onclick="settingsTab('tab-account')">👤 Cuenta</button>
     </div>
 
@@ -671,41 +637,6 @@
       <div class="modal-actions">
         <button class="btn" onclick="closeSettings()">Cancelar</button>
         <button class="btn btn-accent" onclick="changePassword()">Guardar contraseña</button>
-      </div>
-    </div>
-
-    <!-- TAB: EMAILJS CONFIG -->
-    <div class="settings-panel" id="tab-emailjs">
-      <div class="auth-success" id="emailjs-saved"></div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;">
-        Para que la recuperación por correo funcione, crea una cuenta gratuita en
-        <a href="https://www.emailjs.com" target="_blank" style="color:var(--accent)">emailjs.com</a>,
-        crea un servicio de email y una plantilla, luego pega los datos aquí.
-      </p>
-      <div class="form-group">
-        <label class="form-label">Public Key (Account → API Keys)</label>
-        <input class="form-input" id="ejs-pubkey" placeholder="user_xxxxxxxxxxxxxxxxx">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Service ID</label>
-        <input class="form-input" id="ejs-service" placeholder="service_xxxxxxx">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Template ID</label>
-        <input class="form-input" id="ejs-template" placeholder="template_xxxxxxx">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Correo registrado (para recuperación)</label>
-        <input class="form-input" id="ejs-email" type="email" placeholder="correo@ejemplo.com">
-      </div>
-      <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">
-        La plantilla EmailJS debe incluir las variables: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{to_email}}</code>,
-        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{reset_code}}</code>,
-        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{app_name}}</code>
-      </p>
-      <div class="modal-actions">
-        <button class="btn" onclick="closeSettings()">Cancelar</button>
-        <button class="btn btn-accent" onclick="saveEmailJSConfig()">Guardar configuración</button>
       </div>
     </div>
 
@@ -754,6 +685,7 @@
         <div onclick="exportJSON()" style="padding:11px 16px;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">🗂️ JSON (respaldo)</div>
       </div>
     </div>
+    <span id="sync-indicator" style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;display:none;"></span>
     <button class="btn" onclick="openSettings()" title="Ajustes de cuenta">⚙️</button>
   </div>
 </header>
@@ -1120,8 +1052,74 @@ if (localStorage.getItem('sufrideras_data')) {
   try { data = JSON.parse(localStorage.getItem('sufrideras_data')); } catch(e) {}
 }
 
-function saveData() {
+// ── SUPABASE CONFIG ─────────────────────────────────
+const SUPA_URL = 'https://mtlglxtomkldiomizuce.supabase.co';
+const SUPA_KEY = 'sb_publishable_2OXdxe9-9gBzlie9j4ax0g_q5b84yml';
+
+function showSync(msg, color='var(--text3)') {
+  const el = document.getElementById('sync-indicator');
+  if (!el) return;
+  el.style.display = 'inline';
+  el.style.color = color;
+  el.textContent = msg;
+  if (color !== 'var(--red)') setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+async function saveData() {
+  // Save to localStorage as backup
   localStorage.setItem('sufrideras_data', JSON.stringify(data));
+  showSync('⟳ Guardando...', 'var(--accent)');
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/sufrideras_data?id=eq.main`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ data: data, updated_at: new Date().toISOString() })
+    });
+    if (res.ok) {
+      showSync('✓ Guardado en nube', 'var(--green)');
+    } else {
+      showSync('⚠ Error al guardar', 'var(--red)');
+    }
+  } catch(e) {
+    showSync('⚠ Sin conexión', 'var(--red)');
+    console.warn('Error guardando en nube:', e);
+  }
+}
+
+async function loadFromCloud() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/sufrideras_data?id=eq.main&select=data`, {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`
+      }
+    });
+    const rows = await res.json();
+    if (rows && rows[0] && rows[0].data && rows[0].data.weeks && rows[0].data.weeks.length > 0) {
+      // Cloud has data — use it
+      data = rows[0].data;
+      localStorage.setItem('sufrideras_data', JSON.stringify(data));
+    } else {
+      // Cloud is empty — upload local data
+      await fetch(`${SUPA_URL}/rest/v1/sufrideras_data?id=eq.main`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ data: data, updated_at: new Date().toISOString() })
+      });
+    }
+  } catch(e) {
+    console.warn('Error cargando desde nube, usando datos locales:', e);
+  }
 }
 
 function fmt(n) {
@@ -2278,7 +2276,15 @@ function bootAuth() {
 function showApp() {
   document.getElementById('auth-layer').style.display = 'none';
   document.getElementById('app-root').style.display   = 'block';
-  setTimeout(() => renderDashboard(), 100);
+  // Load from cloud first, then render
+  if (typeof Chart === 'undefined') {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+    s.onload = () => loadFromCloud().then(() => setTimeout(renderDashboard, 100));
+    document.head.appendChild(s);
+  } else {
+    loadFromCloud().then(() => setTimeout(renderDashboard, 100));
+  }
 }
 
 function showLogin() {
