@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sufrideras Eurohinca 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+/* ── AUTH LAYER ───────────────────────────────────── */
+#auth-layer {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+}
+#app-root { display: none; }
+.auth-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 380px;
+  max-width: 95vw;
+}
+.auth-logo-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
+}
+.auth-title {
+  font-size: 22px; font-weight: 800; color: var(--text);
+  margin-bottom: 6px; line-height: 1.1;
+}
+.auth-subtitle {
+  font-size: 12px; color: var(--text3); margin-bottom: 28px;
+}
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+.auth-form-group { margin-bottom: 14px; }
+.auth-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text3); display: block; margin-bottom: 6px;
+}
+.auth-input {
+  width: 100%; font-family: 'DM Mono', monospace; font-size: 13px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 11px 14px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input:focus { border-color: var(--accent); }
+.auth-btn {
+  width: 100%; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  padding: 12px; border-radius: 10px; border: none; cursor: pointer;
+  transition: all 0.15s; margin-top: 4px;
+}
+.auth-btn-primary { background: var(--accent); color: #0f0f0f; }
+.auth-btn-primary:hover { background: var(--accent2); }
+.auth-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-link {
+  font-size: 12px; color: var(--text3); text-align: center;
+  margin-top: 16px; cursor: pointer;
+}
+.auth-link span { color: var(--accent); text-decoration: underline; }
+.auth-error {
+  font-size: 12px; color: var(--red);
+  background: rgba(224,92,92,0.08); border: 1px solid rgba(224,92,92,0.2);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: none;
+}
+.auth-success {
+  font-size: 12px; color: var(--green);
+  background: rgba(76,175,125,0.08); border: 1px solid rgba(76,175,125,0.2);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: none;
+}
+.auth-divider {
+  height: 1px; background: var(--border); margin: 20px 0;
+}
+.emailjs-notice {
+  font-size: 10px; color: var(--text3); text-align: center;
+  margin-top: 14px; line-height: 1.5;
+}
+.emailjs-notice a { color: var(--accent); }
+/* settings modal */
+#modal-settings .modal { width: 480px; }
+.settings-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.settings-tab {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+  padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border2);
+  background: var(--bg3); color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.settings-tab.active { background: var(--accent); color: #0f0f0f; border-color: var(--accent); }
+.settings-panel { display: none; }
+.settings-panel.active { display: block; }
+</style>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --bg2: #1a1a1a;
+    --bg3: #242424;
+    --border: #2e2e2e;
+    --border2: #3a3a3a;
+    --text: #f0ede8;
+    --text2: #a09c96;
+    --text3: #6b6760;
+    --accent: #e8c547;
+    --accent2: #c4a42e;
+    --green: #4caf7d;
+    --red: #e05c5c;
+    --blue: #5b9bd5;
+    --orange: #e0834a;
+    --purple: #9b7fe8;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    flex-direction: column;
+  }
+  .logo-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .logo-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--border); }
+  .btn-accent {
+    background: var(--accent);
+    color: #0f0f0f;
+    border-color: var(--accent);
+  }
+  .btn-accent:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn-danger { border-color: var(--red); color: var(--red); background: transparent; }
+  .btn-danger:hover { background: rgba(224,92,92,0.1); }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: calc(100vh - 65px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sidebar-section {
+    padding: 6px 20px 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+  .sidebar-item {
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.15s;
+    color: var(--text2);
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-item:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-item.active {
+    background: var(--bg3);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .sidebar-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--text3);
+  }
+
+  /* MAIN CONTENT */
+  .main { flex: 1; padding: 32px; overflow-y: auto; max-width: 1100px; }
+
+  /* TABS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* SUMMARY CARDS — CORPORATE REDESIGN */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 18px 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .stat-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+  .stat-card.yellow .stat-card-icon { background: rgba(232,197,71,0.12); }
+  .stat-card.red .stat-card-icon    { background: rgba(224,92,92,0.12); }
+  .stat-card.blue .stat-card-icon   { background: rgba(91,155,213,0.12); }
+  .stat-card.green .stat-card-icon  { background: rgba(76,175,125,0.12); }
+  .stat-card.orange .stat-card-icon { background: rgba(224,131,74,0.12); }
+  .stat-card.purple .stat-card-icon { background: rgba(155,127,232,0.12); }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .stat-value.yellow { color: var(--accent); }
+  .stat-value.green  { color: var(--green); }
+  .stat-value.red    { color: var(--red); }
+  .stat-value.blue   { color: var(--blue); }
+  .stat-value.orange { color: var(--orange); }
+  .stat-value.purple { color: var(--purple); }
+  .stat-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 5px;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0 10px;
+  }
+  .stat-card-bar {
+    height: 3px;
+    border-radius: 99px;
+    margin-top: 14px;
+    opacity: 0.35;
+  }
+  .stat-card.yellow .stat-card-bar { background: var(--accent); }
+  .stat-card.red    .stat-card-bar { background: var(--red); }
+  .stat-card.blue   .stat-card-bar { background: var(--blue); }
+  .stat-card.green  .stat-card-bar { background: var(--green); }
+  .stat-card.orange .stat-card-bar { background: var(--orange); }
+  .stat-card.purple .stat-card-bar { background: var(--purple); }
+
+  /* CHART AREA */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+
+  /* WEEKLY TABLE */
+  .weeks-container { display: flex; flex-direction: column; gap: 16px; }
+  .week-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .week-card:hover { border-color: var(--border2); }
+  .week-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .week-header-left { display: flex; align-items: center; gap: 12px; }
+  .week-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .week-title { font-size: 14px; font-weight: 700; }
+  .week-dates { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .week-summary { display: flex; gap: 20px; }
+  .week-pill {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .pill-red { background: rgba(224,92,92,0.12); color: var(--red); }
+  .pill-green { background: rgba(76,175,125,0.12); color: var(--green); }
+  .pill-blue { background: rgba(91,155,213,0.12); color: var(--blue); }
+  .week-body { padding: 20px; display: none; }
+  .week-body.open { display: block; }
+
+  /* WORKERS TABLE */
+  .workers-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+  .workers-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .workers-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .workers-table tr:last-child td { border-bottom: none; }
+  .workers-table tr:hover td { background: var(--bg3); color: var(--text); }
+  .name-cell { color: var(--text) !important; font-weight: 500; font-family: 'Syne', sans-serif !important; font-size: 13px !important; }
+
+  /* EXPENSES ROW */
+  .expenses-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .expense-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+  .expense-label { color: var(--text3); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .expense-val { color: var(--text); font-weight: 500; }
+
+  /* PRODUCTION */
+  .production-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .prod-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .prod-icon { font-size: 20px; }
+  .prod-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); }
+  .prod-val { font-size: 18px; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--accent); }
+
+  /* NOTES */
+  .note-box {
+    background: rgba(232,197,71,0.06);
+    border: 1px solid rgba(232,197,71,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .note-icon { color: var(--accent); flex-shrink: 0; }
+
+  /* SECTION DIVIDER */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 16px 0 10px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 580px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .form-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
+  .form-input {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* WORKERS VIEW */
+  .workers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .worker-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .worker-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .worker-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .worker-rate { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .worker-stat { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .worker-stat-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .worker-stat-label { color: var(--text3); }
+  .worker-stat-val { font-family: 'DM Mono', monospace; font-weight: 500; }
+
+  /* PROGRESS BAR */
+  .progress-bar { background: var(--bg3); border-radius: 99px; height: 4px; margin-top: 12px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
+
+  /* TOGGLE ARROW */
+  .toggle-arrow { color: var(--text3); transition: transform 0.2s; font-size: 16px; }
+  .toggle-arrow.open { transform: rotate(180deg); }
+
+  /* INLINE EDIT */
+  .editable {
+    cursor: pointer;
+    border-bottom: 1px dashed var(--border2);
+    padding-bottom: 1px;
+    transition: border-color 0.15s;
+  }
+  .editable:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+    .chart-row { grid-template-columns: 1fr; }
+    .workers-grid { grid-template-columns: 1fr 1fr; }
+    .sidebar { width: 200px; min-width: 200px; }
+    .main { padding: 20px; }
+  }
+  @media (max-width: 600px) {
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .workers-grid { grid-template-columns: 1fr; }
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 12px 0; flex-direction: row; flex-wrap: wrap; gap: 0; }
+    .sidebar-section { display: none; }
+    header { padding: 14px 16px; }
+    .logo-title { font-size: 16px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH LAYER ══════════════════════════════════════════ -->
+<div id="auth-layer">
+  <div class="auth-box">
+    <div class="auth-logo-tag">Registro de Obra · 2026</div>
+    <div class="auth-title">Sufrideras</div>
+    <div class="auth-subtitle">Acceso privado · Ingresa tus credenciales</div>
+
+    <!-- LOGIN PANEL -->
+    <div class="auth-panel active" id="panel-login">
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-form-group">
+        <label class="auth-label">Usuario</label>
+        <input class="auth-input" id="login-user" placeholder="tu usuario" autocomplete="username">
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Contraseña</label>
+        <input class="auth-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="auth-btn auth-btn-primary" onclick="doLogin()">Entrar</button>
+      <div class="auth-link" onclick="switchPanel('panel-forgot')">
+        ¿Olvidaste tu contraseña? <span>Recuperar</span>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD PANEL -->
+    <div class="auth-panel" id="panel-forgot">
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-success" id="forgot-success"></div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.6;">
+        Ingresa tu correo registrado y te enviaremos un código de recuperación.
+      </p>
+      <div class="auth-form-group">
+        <label class="auth-label">Correo electrónico</label>
+        <input class="auth-input" id="forgot-email" type="email" placeholder="correo@ejemplo.com">
+      </div>
+      <button class="auth-btn auth-btn-primary" id="forgot-btn" onclick="doForgot()">Enviar código</button>
+      <div class="auth-divider"></div>
+      <div class="auth-form-group">
+        <label class="auth-label">Código recibido</label>
+        <input class="auth-input" id="forgot-code" placeholder="Ej: 847291" autocomplete="off">
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Nueva contraseña</label>
+        <input class="auth-input" id="forgot-newpass" type="password" placeholder="Nueva contraseña">
+      </div>
+      <button class="auth-btn auth-btn-primary" onclick="doResetPassword()">Cambiar contraseña</button>
+      <div class="auth-link" onclick="switchPanel('panel-login')">← Volver al login</div>
+      <div class="emailjs-notice">
+        Servicio de correo por <a href="https://www.emailjs.com" target="_blank">EmailJS</a>.<br>
+        Configura tus credenciales en Ajustes → EmailJS.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal" style="width:480px;">
+    <div class="modal-title">⚙️ Ajustes de cuenta</div>
+    <div class="settings-tabs">
+      <button class="settings-tab active" onclick="settingsTab('tab-password')">🔑 Contraseña</button>
+      <button class="settings-tab" onclick="settingsTab('tab-emailjs')">📧 EmailJS</button>
+      <button class="settings-tab" onclick="settingsTab('tab-account')">👤 Cuenta</button>
+    </div>
+
+    <!-- TAB: CHANGE PASSWORD -->
+    <div class="settings-panel active" id="tab-password">
+      <div class="auth-error" id="settings-pass-error"></div>
+      <div class="auth-success" id="settings-pass-ok"></div>
+      <div class="form-group">
+        <label class="form-label">Contraseña actual</label>
+        <input class="form-input" id="s-old-pass" type="password" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nueva contraseña</label>
+        <input class="form-input" id="s-new-pass" type="password" placeholder="Nueva contraseña">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar nueva contraseña</label>
+        <input class="form-input" id="s-confirm-pass" type="password" placeholder="Repite la contraseña">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeSettings()">Cancelar</button>
+        <button class="btn btn-accent" onclick="changePassword()">Guardar contraseña</button>
+      </div>
+    </div>
+
+    <!-- TAB: EMAILJS CONFIG -->
+    <div class="settings-panel" id="tab-emailjs">
+      <div class="auth-success" id="emailjs-saved"></div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;">
+        Para que la recuperación por correo funcione, crea una cuenta gratuita en
+        <a href="https://www.emailjs.com" target="_blank" style="color:var(--accent)">emailjs.com</a>,
+        crea un servicio de email y una plantilla, luego pega los datos aquí.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Public Key (Account → API Keys)</label>
+        <input class="form-input" id="ejs-pubkey" placeholder="user_xxxxxxxxxxxxxxxxx">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service ID</label>
+        <input class="form-input" id="ejs-service" placeholder="service_xxxxxxx">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Template ID</label>
+        <input class="form-input" id="ejs-template" placeholder="template_xxxxxxx">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo registrado (para recuperación)</label>
+        <input class="form-input" id="ejs-email" type="email" placeholder="correo@ejemplo.com">
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">
+        La plantilla EmailJS debe incluir las variables: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{to_email}}</code>,
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{reset_code}}</code>,
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">{{app_name}}</code>
+      </p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeSettings()">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveEmailJSConfig()">Guardar configuración</button>
+      </div>
+    </div>
+
+    <!-- TAB: ACCOUNT -->
+    <div class="settings-panel" id="tab-account">
+      <div class="auth-success" id="settings-user-ok"></div>
+      <div class="auth-error" id="settings-user-error"></div>
+      <div class="form-group">
+        <label class="form-label">Nombre de usuario</label>
+        <input class="form-input" id="s-username" placeholder="nuevo_usuario">
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:14px;">
+        Necesitarás ingresar tu contraseña actual para confirmar el cambio.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Contraseña actual (para confirmar)</label>
+        <input class="form-input" id="s-user-pass" type="password" placeholder="••••••••">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeSettings()">Cancelar</button>
+        <button class="btn btn-accent" onclick="changeUsername()">Guardar usuario</button>
+      </div>
+      <div style="border-top:1px solid var(--border);margin-top:20px;padding-top:16px;">
+        <button class="btn btn-danger" style="width:100%;" onclick="doLogout()">🚪 Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ROOT ══════════════════════════════════════════════ -->
+<div id="app-root">
+<header>
+  <div class="logo">
+    <span class="logo-tag">Registro de Obra · 2026</span>
+    <span class="logo-title">Sufrideras Eurohinca</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-accent" onclick="openNewWeekModal()">+ Nueva Semana</button>
+    <button class="btn" onclick="document.getElementById('excel-import-input').click()">📥 Importar Excel</button>
+    <input type="file" id="excel-import-input" accept=".xlsx" style="display:none" onchange="importExcel(this)">
+    <div style="position:relative;">
+      <button class="btn" onclick="toggleExportMenu()" id="export-btn">📤 Exportar ▾</button>
+      <div id="export-menu" style="display:none;position:absolute;top:38px;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;min-width:160px;z-index:200;overflow:hidden;">
+        <div onclick="exportExcel()" style="padding:11px 16px;cursor:pointer;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">📊 Excel (.xlsx)</div>
+        <div onclick="exportPDF()" style="padding:11px 16px;cursor:pointer;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">📄 PDF</div>
+        <div onclick="exportJSON()" style="padding:11px 16px;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">🗂️ JSON (respaldo)</div>
+      </div>
+    </div>
+    <button class="btn" onclick="openSettings()" title="Ajustes de cuenta">⚙️</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Vistas</div>
+    <div class="sidebar-item active" onclick="showView('dashboard')">
+      📊 <span>Dashboard</span>
+    </div>
+    <div class="sidebar-item" onclick="showView('semanas')">
+      📅 <span>Semanas</span>
+    </div>
+    <div class="sidebar-item" onclick="showView('trabajadores')">
+      👷 <span>Trabajadores</span>
+    </div>
+    <div class="sidebar-item" onclick="showView('gastos')">
+      💸 <span>Gastos Extra</span>
+    </div>
+
+    <div class="sidebar-section">Proyecto</div>
+    <div class="sidebar-item" onclick="showView('info')">
+      ℹ️ <span>Información</span>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="view-dashboard">
+      <div class="summary-grid" id="summary-grid"></div>
+      <div class="chart-row">
+        <div class="card">
+          <div class="card-title">Gasto semanal por trabajadores + extras</div>
+          <div style="position:relative;height:240px;min-height:240px;">
+            <canvas id="chartGastos" role="img" aria-label="Gasto semanal por semana"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Distribución de costos</div>
+          <div style="position:relative;height:240px;min-height:240px;">
+            <canvas id="chartDist" role="img" aria-label="Distribución de costos"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEMANAS VIEW -->
+    <div class="view" id="view-semanas">
+      <div class="weeks-container" id="weeks-container"></div>
+    </div>
+
+    <!-- TRABAJADORES VIEW -->
+    <div class="view" id="view-trabajadores">
+      <div class="workers-grid" id="workers-grid"></div>
+      <div class="card">
+        <div class="card-title">Total pagado por trabajador</div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chartWorkers" role="img" aria-label="Total pagado por trabajador"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- GASTOS EXTRA VIEW -->
+    <div class="view" id="view-gastos">
+      <div class="summary-grid" style="grid-template-columns:repeat(2,1fr);" id="gastos-summary"></div>
+      <div class="card" style="margin-top:0;">
+        <div class="card-title">Todos los gastos adicionales</div>
+        <table class="workers-table" style="width:100%;" id="gastos-table">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Semana</th>
+              <th>Fecha</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GRÚAS VIEW -->
+    <div class="view" id="view-gruas">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Registro independiente</div>
+          <div style="font-size:20px;font-weight:800;">Servicios de Grúa</div>
+        </div>
+        <button class="btn btn-accent" onclick="openGruaModal()">+ Agregar Grúa</button>
+      </div>
+      <div class="summary-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;" id="gruas-summary"></div>
+      <div class="card">
+        <div class="card-title">Historial de servicios</div>
+        <table class="workers-table" style="width:100%;" id="gruas-table">
+          <thead>
+            <tr>
+              <th>Empresa / Servicio</th>
+              <th>Semana</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Monto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INFO VIEW -->
+    <div class="view" id="view-info">
+      <div class="card">
+        <div class="card-title">Información del Proyecto</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg3);border-radius:10px;">
+            <span style="font-size:24px;">🏗️</span>
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);">Proyecto</div>
+              <div style="font-size:15px;font-weight:700;">Trabajo de Sufrideras Eurohinca 2026</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg3);border-radius:10px;">
+            <span style="font-size:24px;">🚛</span>
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);">Servicio de descarga inicial</div>
+              <div style="font-size:15px;font-weight:700;">Grúa Sanchez · $80.000</div>
+              <div style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">Descarga de material</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg3);border-radius:10px;">
+            <span style="font-size:24px;">📅</span>
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);">Inicio de trabajos</div>
+              <div style="font-size:15px;font-weight:700;">Lunes 13 de Abril 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</div><!-- /app-root -->
+
+<!-- MODAL NUEVA SEMANA -->
+<div class="modal-overlay" id="modal-semana">
+  <div class="modal">
+    <div class="modal-title">Agregar / Editar Semana</div>
+
+    <input type="hidden" id="editWeekId">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Número de Semana</label>
+        <input class="form-input" id="f-weeknum" type="number" placeholder="5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Período</label>
+        <input class="form-input" id="f-period" placeholder="11-05-26 al 15-05-26">
+      </div>
+    </div>
+
+    <div class="section-label">Producción</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Piezas en Bruto</label>
+        <input class="form-input" id="f-bruto" type="number" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Palets Terminados</label>
+        <input class="form-input" id="f-palets" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <div class="section-label">Trabajadores — Pago Base Semanal</div>
+    <div id="worker-inputs"></div>
+
+    <div class="section-label">Gastos Adicionales</div>
+    <div id="extra-inputs">
+      <div class="extra-row" style="display:flex;gap:8px;margin-bottom:8px;">
+        <input class="form-input" style="flex:2;" placeholder="Descripción (ej: Bote de Basura)" data-extra-desc>
+        <input class="form-input mono" style="flex:1;" placeholder="$0" data-extra-amount>
+        <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-extra-date>
+        <button class="btn" onclick="removeExtraRow(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+      </div>
+    </div>
+    <button class="btn" onclick="addExtraRow()" style="margin-bottom:12px;">+ Agregar gasto</button>
+
+    <div class="section-label" style="border-top:1px solid var(--border);padding-top:14px;">🚛 Servicio de Grúa (esta semana)</div>
+    <div id="grua-week-inputs"></div>
+    <button class="btn" onclick="addGruaWeekRow()" style="margin-bottom:12px;">+ Agregar grúa</button>
+
+    <div class="section-label" style="border-top:1px solid var(--border);padding-top:14px;">🗑️ Bote de Basura (esta semana)</div>
+    <div id="basura-week-inputs"></div>
+    <button class="btn" onclick="addBasuraWeekRow()" style="margin-bottom:12px;">+ Agregar bote de basura</button>
+
+    <div class="form-group" style="margin-top:6px;">
+      <label class="form-label">Total Pagado <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(calculado automáticamente)</span></label>
+      <div id="total-preview" style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;">
+        <div id="total-desglose" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;font-size:12px;font-family:'DM Mono',monospace;color:var(--text2);"></div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">Total</span>
+          <span id="total-display" style="font-size:20px;font-weight:800;font-family:'DM Mono',monospace;color:var(--green);">$0</span>
+        </div>
+      </div>
+      <input type="hidden" id="f-total">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fecha de Pago</label>
+      <input class="form-input" id="f-paydate" placeholder="24-04-26">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas / Observaciones</label>
+      <textarea class="form-input" id="f-notes" rows="2" placeholder="Notas importantes, adelantos, bonos..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveWeek()">Guardar Semana</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GRÚA -->
+<div class="modal-overlay" id="modal-grua">
+  <div class="modal" style="width:480px;">
+    <div class="modal-title">🚛 Agregar Servicio de Grúa</div>
+    <input type="hidden" id="editGruaId">
+    <div class="form-group">
+      <label class="form-label">Empresa / Nombre</label>
+      <input class="form-input" id="g-empresa" placeholder="Ej: Grúas M&L, Sanchez...">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Fecha</label>
+        <input class="form-input" id="g-fecha" placeholder="22-04-26">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Semana #</label>
+        <input class="form-input" id="g-semana" type="number" placeholder="2">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción del servicio</label>
+      <input class="form-input" id="g-desc" placeholder="Ej: Descarga de material, traslado...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Monto ($)</label>
+      <input class="form-input" id="g-monto" type="number" placeholder="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeGruaModal()">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveGrua()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKERS = [
+  { id: 'robert', name: 'Robert', rate: 45000, color: '#e8c547', start: '13-04-26' },
+  { id: 'jackson', name: 'Jackson', rate: 40000, color: '#5b9bd5', start: '13-04-26' },
+  { id: 'yoangel', name: 'Yoangel', rate: 40000, color: '#4caf7d', start: '16-04-26' },
+];
+
+let data = {
+  gruas: [
+    { id: 10001, empresa: 'Grúa Sanchez', fecha: 'Antes 13-04-26', semana: 0, desc: 'Descarga de material inicial', monto: 80000 },
+  ],
+  weeks: [
+    {
+      id: 1,
+      num: 1,
+      period: '13-04-26 al 17-04-26',
+      bruto: null,
+      palets: null,
+      workers: {
+        robert: { days: 5, bonus: 20000, advances: [{ date: '', amount: 0 }], detail: '45.000x5 + bono 20.000 = 245.000' },
+        jackson: { days: 5, bonus: 0, advances: [{ date: 'Lunes', amount: 40000 }], detail: '40.000x5 - abono Lunes 40.000 = 160.000' },
+        yoangel: { days: 2, bonus: 0, advances: [{ date: 'Jueves', amount: 20000 }], detail: '40.000x2 - abono Jueves 20.000 = 60.000' },
+      },
+      extras: [],
+      basuraServicio: [
+        { fecha: 'Viernes 17-04-26', monto: 60000 }
+      ],
+      total: 585000,
+      paydate: '17-04-26',
+      notes: ''
+    },
+    {
+      id: 2,
+      num: 2,
+      period: '20-04-26 al 24-04-26',
+      bruto: null,
+      palets: null,
+      workers: {
+        robert: { days: 5, bonus: 20000, advances: [{ date: 'Miércoles', amount: 10000 }], detail: '45.000 + bono 20.000' },
+        jackson: { days: 5, bonus: 20000, advances: [{ date: 'Lunes', amount: 10000 }], detail: '40.000 + bono 20.000' },
+        yoangel: { days: 5, bonus: 20000, advances: [{ date: 'Martes', amount: 20000 }, { date: 'Jueves', amount: 20000 }], detail: '40.000 + bono 20.000' },
+      },
+      extras: [
+        { desc: 'Almuerzo Sábado', amount: 50000, date: 'Sábado 25-04-26' },
+      ],
+      gruasServicio: [
+        { empresa: 'Grúas M&L', fecha: '22-04-26', desc: 'Servicio de grúa', monto: 45000 },
+      ],
+      basuraServicio: [
+        { fecha: 'Viernes 24-04-26', monto: 70000 }
+      ],
+      total: 850000,
+      paydate: '25-04-26',
+      notes: 'Jornada de Sábado. Robert: 45.000+bono 20.000=65.000 | Jackson: 40.000+bono 20.000=60.000 | Yoangel: 40.000+bono 20.000=60.000'
+    },
+    {
+      id: 3,
+      num: 3,
+      period: '27-04-26 al 01-05-26',
+      bruto: null,
+      palets: null,
+      workers: {
+        robert: { days: 5, bonus: 20000, advances: [{ date: 'Jueves', amount: 20000 }], detail: 'abono Jueves 20.000 + bono 20.000' },
+        jackson: { days: 5, bonus: 20000, advances: [{ date: 'Lunes', amount: 20000 }], detail: 'abono Lunes 20.000 + bono 20.000' },
+        yoangel: { days: 5, bonus: 20000, advances: [{ date: 'Martes', amount: 20000 }], detail: 'abono Martes 20.000 + bono 20.000' },
+      },
+      extras: [],
+      basuraServicio: [
+        { fecha: 'Sábado 02-05-26', monto: 80000 }
+      ],
+      total: 765000,
+      paydate: '01-05-26',
+      notes: 'Yoangel pidió adelanto de $40.000 para descontarlo la semana siguiente.'
+    },
+    {
+      id: 4,
+      num: 4,
+      period: '04-05-26 al 08-05-26',
+      bruto: null,
+      palets: null,
+      workers: {
+        robert: { days: 5, bonus: 0, advances: [{ date: 'Martes 04-05', amount: 10000 }], detail: 'adelanto Martes 10.000' },
+        jackson: { days: 5, bonus: 0, advances: [{ date: 'Lunes 04-05', amount: 50000 }], detail: 'adelanto Lunes 50.000' },
+        yoangel: { days: 5, bonus: 0, advances: [
+          { date: 'Vie 01-05', amount: 40000 },
+          { date: 'Lun 04-05', amount: 10000 },
+          { date: 'Mar 05-05', amount: 10000 },
+        ], detail: 'adelanto Vie 40.000 + Lun 10.000 + Mar 10.000' },
+      },
+      extras: [],
+      basuraServicio: [
+        { fecha: 'Sábado 09-05-26', monto: 100000 }
+      ],
+      total: 725000,
+      paydate: '08-05-26',
+      notes: 'Descuento adelanto semana anterior de Yoangel: $40.000'
+    },
+  ]
+};
+
+// Load from localStorage
+if (localStorage.getItem('sufrideras_data')) {
+  try { data = JSON.parse(localStorage.getItem('sufrideras_data')); } catch(e) {}
+}
+
+function saveData() {
+  localStorage.setItem('sufrideras_data', JSON.stringify(data));
+}
+
+function fmt(n) {
+  if (!n && n !== 0) return '—';
+  return '$' + Number(n).toLocaleString('es-CL');
+}
+
+function getWorkerTotal(wk) {
+  let t = 0;
+  WORKERS.forEach(w => {
+    const wd = wk.workers[w.id];
+    if (!wd) return;
+    t += (w.rate * wd.days) + (wd.bonus || 0);
+  });
+  return t;
+}
+
+function getGruasWeekTotal(wk) {
+  return (wk.gruasServicio || []).reduce((a, g) => a + (Number(g.monto) || 0), 0);
+}
+
+function getBasuraWeekTotal(wk) {
+  return (wk.basuraServicio || []).reduce((a, b) => a + (Number(b.monto) || 0), 0);
+}
+
+function getExtrasTotal(wk) {
+  return (wk.extras || []).reduce((a, e) => a + (Number(e.amount) || 0), 0);
+}
+
+function getTotalGruas() {
+  const globalGruas = (data.gruas || []).reduce((a, g) => a + (Number(g.monto) || 0), 0);
+  const weekGruas = data.weeks.reduce((a, wk) => a + getGruasWeekTotal(wk), 0);
+  return globalGruas + weekGruas;
+}
+
+// ───────────────────── RENDER FUNCTIONS ─────────────────────
+
+function renderDashboard() {
+  const totalWorkers = data.weeks.reduce((a, wk) => a + getWorkerTotal(wk), 0);
+  const totalExtras = data.weeks.reduce((a, wk) => a + getExtrasTotal(wk), 0);
+  const totalGruas = getTotalGruas();
+  const totalBasura = data.weeks.reduce((a, wk) => a + getBasuraWeekTotal(wk), 0);
+  const grandTotal = totalWorkers + totalExtras + totalGruas + totalBasura;
+
+  document.getElementById('summary-grid').innerHTML = `
+    <div class="stat-card yellow">
+      <div class="stat-card-icon">📊</div>
+      <div class="stat-label">Total Invertido</div>
+      <div class="stat-value yellow">${fmt(grandTotal)}</div>
+      <div class="stat-divider"></div>
+      <div class="stat-sub">obra · grúas · gastos · basura</div>
+      <div class="stat-card-bar"></div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-card-icon">👷</div>
+      <div class="stat-label">Mano de Obra</div>
+      <div class="stat-value red">${fmt(totalWorkers)}</div>
+      <div class="stat-divider"></div>
+      <div class="stat-sub">${data.weeks.length} semanas · ${WORKERS.length} trabajadores</div>
+      <div class="stat-card-bar"></div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-card-icon">💸</div>
+      <div class="stat-label">Gastos Extra</div>
+      <div class="stat-value blue">${fmt(totalExtras)}</div>
+      <div class="stat-divider"></div>
+      <div class="stat-sub">almuerzos y otros</div>
+      <div class="stat-card-bar"></div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-card-icon">🚛</div>
+      <div class="stat-label">Grúas</div>
+      <div class="stat-value orange">${fmt(totalGruas)}</div>
+      <div class="stat-divider"></div>
+      <div class="stat-sub">${data.weeks.filter(w=>(w.gruasServicio||[]).length).length} sem. con servicio</div>
+      <div class="stat-card-bar"></div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-card-icon">🗑️</div>
+      <div class="stat-label">Bote de Basura</div>
+      <div class="stat-value purple">${fmt(totalBasura)}</div>
+      <div class="stat-divider"></div>
+      <div class="stat-sub">${data.weeks.reduce((a,w)=>a+(w.basuraServicio||[]).length,0)} retiros registrados</div>
+      <div class="stat-card-bar"></div>
+    </div>
+  `;
+
+  // Chart 1 – Gastos semanales
+  const labels = data.weeks.map(w => 'Sem ' + w.num);
+  const workerData = data.weeks.map(w => getWorkerTotal(w));
+  const extrasData = data.weeks.map(w => getExtrasTotal(w));
+  const gruasData = data.weeks.map(w => getGruasWeekTotal(w));
+  const basuraData = data.weeks.map(w => getBasuraWeekTotal(w));
+
+  const c1 = document.getElementById('chartGastos');
+  const c2 = document.getElementById('chartDist');
+  c1.style.width = '100%'; c1.style.height = '240px';
+  c2.style.width = '100%'; c2.style.height = '240px';
+
+  const ctx1 = c1.getContext('2d');
+  if (window._chart1) window._chart1.destroy();
+  window._chart1 = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Trabajadores', data: workerData, backgroundColor: '#e05c5c', borderRadius: 4 },
+        { label: 'Gastos extra', data: extrasData, backgroundColor: '#5b9bd5', borderRadius: 4 },
+        { label: 'Grúas', data: gruasData, backgroundColor: '#e0834a', borderRadius: 4 },
+        { label: 'Basura', data: basuraData, backgroundColor: '#9b7fe8', borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { stacked: true, ticks: { color: '#a09c96', font: { family: 'DM Mono', size: 11 } }, grid: { color: '#2e2e2e' } },
+        y: { stacked: true, ticks: { color: '#a09c96', font: { family: 'DM Mono', size: 11 }, callback: v => '$' + (v/1000) + 'k' }, grid: { color: '#2e2e2e' } }
+      }
+    }
+  });
+
+  // Chart 2 – Distribución
+  const ctx2 = c2.getContext('2d');
+  if (window._chart2) window._chart2.destroy();
+  window._chart2 = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Mano de Obra', 'Gastos Extra', 'Grúas', 'Basura'],
+      datasets: [{
+        data: [totalWorkers, totalExtras, totalGruas, totalBasura],
+        backgroundColor: ['#e05c5c', '#5b9bd5', '#e0834a', '#9b7fe8'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } }
+      },
+      cutout: '65%'
+    }
+  });
+}
+
+function renderSemanas() {
+  const cont = document.getElementById('weeks-container');
+  cont.innerHTML = '';
+  data.weeks.forEach(wk => {
+    const wDiv = document.createElement('div');
+    wDiv.className = 'week-card';
+    wDiv.id = 'week-card-' + wk.id;
+    const wt = getWorkerTotal(wk);
+    const et = getExtrasTotal(wk);
+    const gt = getGruasWeekTotal(wk);
+    const bt = getBasuraWeekTotal(wk);
+    wDiv.innerHTML = `
+      <div class="week-header" onclick="toggleWeek(${wk.id})">
+        <div class="week-header-left">
+          <span class="week-num">SEM ${wk.num}</span>
+          <div>
+            <div class="week-title">Semana #${wk.num}</div>
+            <div class="week-dates">${wk.period}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="week-summary">
+            <span class="week-pill pill-red">👷 ${fmt(wt)}</span>
+            ${et > 0 ? `<span class="week-pill pill-blue">💸 ${fmt(et)}</span>` : ''}
+            ${gt > 0 ? `<span class="week-pill" style="background:rgba(224,131,74,0.12);color:var(--orange);">🚛 ${fmt(gt)}</span>` : ''}
+            ${bt > 0 ? `<span class="week-pill" style="background:rgba(155,127,232,0.12);color:var(--purple);">🗑️ ${fmt(bt)}</span>` : ''}
+            <span class="week-pill pill-green">Total: ${fmt(wt + et + gt + bt)}</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn" style="padding:5px 10px;font-size:11px;" onclick="editWeek(${wk.id}, event)">✎</button>
+            <button class="btn btn-danger" style="padding:5px 10px;font-size:11px;" onclick="deleteWeek(${wk.id}, event)">✕</button>
+          </div>
+          <span class="toggle-arrow" id="arrow-${wk.id}">▼</span>
+        </div>
+      </div>
+      <div class="week-body" id="week-body-${wk.id}">
+        ${renderWeekBody(wk)}
+      </div>
+    `;
+    cont.appendChild(wDiv);
+  });
+
+}
+
+function renderWeekBody(wk) {
+  const workerRows = WORKERS.map(w => {
+    const wd = wk.workers[w.id];
+    if (!wd) return '';
+    const base = w.rate * wd.days;
+    const bonus = wd.bonus || 0;
+    const totalAdv = (wd.advances || []).reduce((a,x) => a + (Number(x.amount)||0), 0);
+    const net = base + bonus - totalAdv;
+    const advStr = (wd.advances || []).filter(a => a.amount > 0).map(a => `${a.date ? a.date + ': ' : ''}${fmt(a.amount)}`).join(', ') || '—';
+    return `
+      <tr>
+        <td class="name-cell">${w.name}</td>
+        <td>${fmt(w.rate)} × ${wd.days}d</td>
+        <td>${bonus > 0 ? fmt(bonus) : '—'}</td>
+        <td>${advStr}</td>
+        <td style="color:var(--accent);font-weight:600;">${fmt(net)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const extraRows = (wk.extras || []).map(e => `
+    <div class="expense-item">
+      <div class="expense-label">${e.desc}</div>
+      <div class="expense-val">${fmt(e.amount)} <span style="color:var(--text3);font-size:10px;">${e.date || ''}</span></div>
+    </div>
+  `).join('');
+
+  const gruaRows = (wk.gruasServicio || []).map(g => `
+    <div class="expense-item" style="border-color:rgba(224,131,74,0.3);background:rgba(224,131,74,0.06);">
+      <div class="expense-label" style="color:var(--orange);">🚛 ${g.empresa || 'Grúa'}</div>
+      <div class="expense-val">${fmt(g.monto)} <span style="color:var(--text3);font-size:10px;">${g.fecha || ''}</span></div>
+      ${g.desc ? `<div style="font-size:11px;color:var(--text3);margin-top:2px;">${g.desc}</div>` : ''}
+    </div>
+  `).join('');
+
+  const basuraRows = (wk.basuraServicio || []).map(b => `
+    <div class="expense-item" style="border-color:rgba(107,103,96,0.4);background:rgba(107,103,96,0.07);">
+      <div class="expense-label" style="color:var(--text2);">🗑️ Bote de Basura</div>
+      <div class="expense-val">${fmt(b.monto)} <span style="color:var(--text3);font-size:10px;">${b.fecha || ''}</span></div>
+    </div>
+  `).join('');
+
+  const prodSection = `
+    <div class="production-section">
+      <div class="prod-box">
+        <span class="prod-icon">⚙️</span>
+        <div>
+          <div class="prod-label">Piezas en Bruto</div>
+          <div class="prod-val">${wk.bruto !== null && wk.bruto !== undefined && wk.bruto !== '' ? wk.bruto : '—'}</div>
+        </div>
+      </div>
+      <div class="prod-box">
+        <span class="prod-icon">📦</span>
+        <div>
+          <div class="prod-label">Palets Terminados</div>
+          <div class="prod-val">${wk.palets !== null && wk.palets !== undefined && wk.palets !== '' ? wk.palets : '—'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const note = wk.notes ? `<div class="note-box"><span class="note-icon">📌</span><span>${wk.notes}</span></div>` : '';
+
+  return `
+    ${prodSection}
+    <div class="section-label">Gasto de Trabajadores</div>
+    <table class="workers-table">
+      <thead>
+        <tr>
+          <th>Trabajador</th>
+          <th>Base</th>
+          <th>Bono</th>
+          <th>Abonos/Adelantos</th>
+          <th>Neto</th>
+        </tr>
+      </thead>
+      <tbody>${workerRows}</tbody>
+    </table>
+    ${wk.extras && wk.extras.length ? `
+    <div class="section-label">Gastos Adicionales</div>
+    <div class="expenses-row">${extraRows}</div>` : ''}
+    ${wk.gruasServicio && wk.gruasServicio.length ? `
+    <div class="section-label" style="color:var(--orange);">🚛 Servicio de Grúa</div>
+    <div class="expenses-row">${gruaRows}</div>` : ''}
+    ${wk.basuraServicio && wk.basuraServicio.length ? `
+    <div class="section-label" style="color:var(--text2);">🗑️ Bote de Basura</div>
+    <div class="expenses-row">${basuraRows}</div>` : ''}
+    <div class="section-label">Cierre de Semana</div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <div class="expense-item">
+        <div class="expense-label">Total Pagado</div>
+        <div class="expense-val" style="color:var(--green);font-size:16px;font-weight:700;">${fmt(wk.total)}</div>
+      </div>
+      <div class="expense-item">
+        <div class="expense-label">Fecha de Pago</div>
+        <div class="expense-val">${wk.paydate || '—'}</div>
+      </div>
+    </div>
+    ${note}
+  `;
+}
+
+function toggleWeek(id) {
+  const body = document.getElementById('week-body-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function renderTrabajadores() {
+  const grid = document.getElementById('workers-grid');
+  grid.innerHTML = '';
+  WORKERS.forEach((w, i) => {
+    const colors = ['#e8c547', '#5b9bd5', '#4caf7d'];
+    const bgColors = ['rgba(232,197,71,0.12)', 'rgba(91,155,213,0.12)', 'rgba(76,175,125,0.12)'];
+    let totalBase = 0, totalBonus = 0, totalAdv = 0;
+    data.weeks.forEach(wk => {
+      const wd = wk.workers[w.id];
+      if (!wd) return;
+      totalBase += w.rate * (wd.days || 0);
+      totalBonus += wd.bonus || 0;
+      totalAdv += (wd.advances || []).reduce((a,x) => a + (Number(x.amount)||0), 0);
+    });
+    const net = totalBase + totalBonus - totalAdv;
+    const maxPossible = w.rate * 5 * data.weeks.length + 20000 * data.weeks.length;
+    const pct = Math.min(100, Math.round(net / maxPossible * 100));
+    grid.innerHTML += `
+      <div class="worker-card">
+        <div class="worker-avatar" style="background:${bgColors[i]};color:${colors[i]};">${w.name[0]}</div>
+        <div class="worker-name">${w.name}</div>
+        <div class="worker-rate">${fmt(w.rate)} / día · inicio ${w.start}</div>
+        <div class="worker-stat">
+          <div class="worker-stat-row"><span class="worker-stat-label">Base total</span><span class="worker-stat-val">${fmt(totalBase)}</span></div>
+          <div class="worker-stat-row"><span class="worker-stat-label">Bonos totales</span><span class="worker-stat-val" style="color:${colors[i]}">${fmt(totalBonus)}</span></div>
+          <div class="worker-stat-row"><span class="worker-stat-label">Adelantos</span><span class="worker-stat-val" style="color:var(--red)">${fmt(totalAdv)}</span></div>
+          <div class="worker-stat-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:6px;"><span class="worker-stat-label">Neto pagado</span><span class="worker-stat-val" style="font-size:15px;color:${colors[i]}">${fmt(net)}</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${colors[i]};"></div></div>
+      </div>
+    `;
+  });
+
+  const ctx = document.getElementById('chartWorkers').getContext('2d');
+  if (window._chart3) window._chart3.destroy();
+  const nets = WORKERS.map(w => {
+    let n = 0;
+    data.weeks.forEach(wk => {
+      const wd = wk.workers[w.id];
+      if (!wd) return;
+      n += w.rate * (wd.days||0) + (wd.bonus||0) - (wd.advances||[]).reduce((a,x)=>a+(Number(x.amount)||0),0);
+    });
+    return n;
+  });
+  window._chart3 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: WORKERS.map(w => w.name),
+      datasets: [{ data: nets, backgroundColor: ['#e8c547','#5b9bd5','#4caf7d'], borderRadius: 6 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#a09c96', font: { family: 'DM Mono', size: 12 } }, grid: { color: '#2e2e2e' } },
+        y: { ticks: { color: '#a09c96', font: { family: 'DM Mono', size: 11 }, callback: v => '$'+(v/1000)+'k' }, grid: { color: '#2e2e2e' } }
+      }
+    }
+  });
+}
+
+function renderGastos() {
+  const allExtras = [];
+  data.weeks.forEach(wk => {
+    (wk.extras || []).forEach(e => {
+      allExtras.push({ ...e, week: wk.num });
+    });
+  });
+
+  const total = allExtras.reduce((a, e) => a + (Number(e.amount)||0), 0);
+  const basura = allExtras.filter(e => e.desc.toLowerCase().includes('basura')).reduce((a,e)=>a+(Number(e.amount)||0),0);
+
+  document.getElementById('gastos-summary').innerHTML = `
+    <div class="stat-card blue">
+      <div class="stat-label">Total Gastos Extra</div>
+      <div class="stat-value blue">${fmt(total)}</div>
+      <div class="stat-sub">${allExtras.length} registros</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Botes de Basura</div>
+      <div class="stat-value yellow">${fmt(basura)}</div>
+      <div class="stat-sub">acumulado</div>
+    </div>
+  `;
+
+  const tbody = document.querySelector('#gastos-table tbody');
+  tbody.innerHTML = allExtras.length ? allExtras.map(e => `
+    <tr>
+      <td class="name-cell">${e.desc}</td>
+      <td>${e.week !== undefined ? 'Sem ' + e.week : '—'}</td>
+      <td>${e.date || '—'}</td>
+      <td style="color:var(--blue);font-weight:600;">${fmt(e.amount)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="4" style="color:var(--text3);text-align:center;padding:20px;">Sin gastos registrados</td></tr>`;
+}
+
+function renderGruas() {
+  const gruas = data.gruas || [];
+  const total = gruas.reduce((a, g) => a + (Number(g.monto)||0), 0);
+  const count = gruas.length;
+
+  document.getElementById('gruas-summary').innerHTML = `
+    <div class="stat-card yellow">
+      <div class="stat-label">Total Grúas</div>
+      <div class="stat-value yellow">${fmt(total)}</div>
+      <div class="stat-sub">${count} servicios</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Promedio por servicio</div>
+      <div class="stat-value blue">${count ? fmt(Math.round(total/count)) : '—'}</div>
+      <div class="stat-sub">por servicio</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Más reciente</div>
+      <div class="stat-value green" style="font-size:16px;">${gruas.length ? gruas[gruas.length-1].empresa : '—'}</div>
+      <div class="stat-sub">${gruas.length ? fmt(gruas[gruas.length-1].monto) : ''}</div>
+    </div>
+  `;
+
+  document.getElementById('badge-gruas').textContent = count;
+
+  const tbody = document.querySelector('#gruas-table tbody');
+  tbody.innerHTML = gruas.length ? gruas.map(g => `
+    <tr>
+      <td class="name-cell">🚛 ${g.empresa}</td>
+      <td>${g.semana ? 'Sem ' + g.semana : '—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;">${g.fecha || '—'}</td>
+      <td style="color:var(--text2);font-size:12px;">${g.desc || '—'}</td>
+      <td style="color:var(--orange);font-weight:700;font-family:'DM Mono',monospace;">${fmt(g.monto)}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn" style="padding:4px 8px;font-size:11px;margin-right:4px;" onclick="editGrua(${g.id})">✎</button>
+        <button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteGrua(${g.id})">✕</button>
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:20px;">Sin servicios de grúa registrados</td></tr>`;
+}
+
+// ───────────────────── VIEW SWITCH ─────────────────────
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'semanas') renderSemanas();
+  if (name === 'trabajadores') renderTrabajadores();
+  if (name === 'gastos') renderGastos();
+  if (name === 'gruas') renderGruas();
+}
+
+// ───────────────────── MODAL ─────────────────────
+
+function buildWorkerInputs(weekData) {
+  const cont = document.getElementById('worker-inputs');
+  cont.innerHTML = WORKERS.map(w => {
+    const wd = weekData && weekData.workers[w.id];
+    const days = wd ? wd.days : 5;
+    const bonus = wd ? (wd.bonus || 0) : 0;
+    const advs = wd && wd.advances ? wd.advances : [{ date: '', amount: 0 }];
+    const advHtml = advs.map((a, i) => `
+      <div style="display:flex;gap:6px;margin-bottom:6px;" data-adv-row>
+        <input class="form-input mono" style="flex:1;" placeholder="Fecha" value="${a.date || ''}" data-adv-date>
+        <input class="form-input mono" style="flex:1;" placeholder="$0" value="${a.amount || ''}" data-adv-amt>
+        <button class="btn" onclick="removeAdv(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+      </div>
+    `).join('');
+    return `
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;" data-worker="${w.id}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:13px;font-weight:700;">${w.name}</span>
+          <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">${fmt(w.rate)}/día</span>
+        </div>
+        <div class="form-row" style="margin-bottom:8px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Días trabajados</label>
+            <input class="form-input" type="number" min="0" max="7" value="${days}" data-days>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Bono ($)</label>
+            <input class="form-input" type="number" value="${bonus}" data-bonus>
+          </div>
+        </div>
+        <div class="form-label" style="margin-bottom:6px;">Adelantos / Abonos</div>
+        <div data-adv-container>${advHtml}</div>
+        <button class="btn" onclick="addAdv(this)" style="font-size:11px;padding:5px 10px;margin-top:4px;">+ Adelanto</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function addAdv(btn) {
+  const container = btn.previousElementSibling;
+  const row = document.createElement('div');
+  row.setAttribute('data-adv-row', '');
+  row.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
+  row.innerHTML = `
+    <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-adv-date>
+    <input class="form-input mono" style="flex:1;" placeholder="$0" data-adv-amt>
+    <button class="btn" onclick="removeAdv(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function removeAdv(btn) {
+  btn.closest('[data-adv-row]').remove();
+}
+
+function addExtraRow() {
+  const cont = document.getElementById('extra-inputs');
+  const row = document.createElement('div');
+  row.className = 'extra-row';
+  row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+  row.innerHTML = `
+    <input class="form-input" style="flex:2;" placeholder="Descripción" data-extra-desc>
+    <input class="form-input mono" style="flex:1;" placeholder="$0" data-extra-amount>
+    <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-extra-date>
+    <button class="btn" onclick="removeExtraRow(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+  `;
+  cont.appendChild(row);
+  calcTotal();
+}
+
+function removeExtraRow(btn) {
+  btn.closest('.extra-row').remove();
+  calcTotal();
+}
+
+function addGruaWeekRow(g) {
+  const cont = document.getElementById('grua-week-inputs');
+  const row = document.createElement('div');
+  row.className = 'grua-week-row';
+  row.style.cssText = 'background:rgba(224,131,74,0.06);border:1px solid rgba(224,131,74,0.2);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px;';
+  row.innerHTML = `
+    <div style="display:flex;gap:8px;">
+      <input class="form-input" style="flex:2;" placeholder="Empresa (ej: Grúas M&L)" data-grua-empresa value="${g ? g.empresa || '' : ''}">
+      <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-grua-fecha value="${g ? g.fecha || '' : ''}">
+      <button class="btn" onclick="removeGruaWeekRow(this)" style="padding:8px 10px;flex-shrink:0;color:var(--orange);border-color:var(--orange);">✕</button>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <input class="form-input" style="flex:2;" placeholder="Descripción del servicio" data-grua-desc value="${g ? g.desc || '' : ''}">
+      <input class="form-input mono" style="flex:1;" placeholder="$0" data-grua-monto value="${g ? g.monto || '' : ''}">
+    </div>
+  `;
+  cont.appendChild(row);
+}
+
+function removeGruaWeekRow(btn) {
+  btn.closest('.grua-week-row').remove();
+  calcTotal();
+}
+
+function calcTotal() {
+  let workerSum = 0;
+  document.querySelectorAll('[data-worker]').forEach(wDiv => {
+    const w = WORKERS.find(x => x.id === wDiv.getAttribute('data-worker'));
+    if (!w) return;
+    const days = parseInt(wDiv.querySelector('[data-days]').value) || 0;
+    const bonus = parseInt(wDiv.querySelector('[data-bonus]').value) || 0;
+    workerSum += w.rate * days + bonus;
+  });
+
+  let extrasSum = 0;
+  document.querySelectorAll('.extra-row').forEach(row => {
+    extrasSum += parseInt(row.querySelector('[data-extra-amount]').value) || 0;
+  });
+
+  let gruasSum = 0;
+  document.querySelectorAll('.grua-week-row').forEach(row => {
+    gruasSum += parseInt(row.querySelector('[data-grua-monto]').value) || 0;
+  });
+
+  let basuraSum = 0;
+  document.querySelectorAll('.basura-week-row').forEach(row => {
+    basuraSum += parseInt(row.querySelector('[data-basura-monto]').value) || 0;
+  });
+
+  const total = workerSum + extrasSum + gruasSum + basuraSum;
+
+  const lines = [
+    { label: '👷 Trabajadores', val: workerSum },
+    { label: '💸 Otros gastos', val: extrasSum },
+    { label: '🚛 Grúas', val: gruasSum },
+    { label: '🗑️ Bote de basura', val: basuraSum },
+  ].filter(l => l.val > 0);
+
+  document.getElementById('total-desglose').innerHTML = lines.map(l =>
+    `<div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">${l.label}</span><span>${fmt(l.val)}</span></div>`
+  ).join('');
+
+  document.getElementById('total-display').textContent = fmt(total);
+  document.getElementById('f-total').value = total;
+}
+
+function addBasuraWeekRow(b) {
+  const cont = document.getElementById('basura-week-inputs');
+  const row = document.createElement('div');
+  row.className = 'basura-week-row';
+  row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+  row.innerHTML = `
+    <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-basura-fecha value="${b ? b.fecha || '' : ''}">
+    <input class="form-input mono" style="flex:1;" placeholder="$0" data-basura-monto value="${b ? b.monto || '' : ''}">
+    <button class="btn" onclick="removeBasuraWeekRow(this)" style="padding:8px 10px;flex-shrink:0;color:var(--text3);">✕</button>
+  `;
+  cont.appendChild(row);
+}
+
+function removeBasuraWeekRow(btn) {
+  btn.closest('.basura-week-row').remove();
+  calcTotal();
+}
+
+function openNewWeekModal() {
+  document.getElementById('editWeekId').value = '';
+  document.getElementById('f-weeknum').value = data.weeks.length + 1;
+  document.getElementById('f-period').value = '';
+  document.getElementById('f-bruto').value = '';
+  document.getElementById('f-palets').value = '';
+  document.getElementById('f-total').value = '';
+  document.getElementById('f-paydate').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('extra-inputs').innerHTML = `
+    <div class="extra-row" style="display:flex;gap:8px;margin-bottom:8px;">
+      <input class="form-input" style="flex:2;" placeholder="Descripción (ej: Bote de Basura)" data-extra-desc>
+      <input class="form-input mono" style="flex:1;" placeholder="$0" data-extra-amount>
+      <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-extra-date>
+      <button class="btn" onclick="removeExtraRow(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+    </div>
+  `;
+  document.getElementById('grua-week-inputs').innerHTML = '';
+  document.getElementById('basura-week-inputs').innerHTML = '';
+  buildWorkerInputs(null);
+  document.getElementById('modal-semana').classList.add('open');
+  setTimeout(calcTotal, 50);
+}
+
+function editWeek(id, e) {
+  e.stopPropagation();
+  const wk = data.weeks.find(w => w.id === id);
+  if (!wk) return;
+  document.getElementById('editWeekId').value = id;
+  document.getElementById('f-weeknum').value = wk.num;
+  document.getElementById('f-period').value = wk.period;
+  document.getElementById('f-bruto').value = wk.bruto || '';
+  document.getElementById('f-palets').value = wk.palets || '';
+  document.getElementById('f-total').value = wk.total || '';
+  document.getElementById('f-paydate').value = wk.paydate || '';
+  document.getElementById('f-notes').value = wk.notes || '';
+
+  const extCont = document.getElementById('extra-inputs');
+  extCont.innerHTML = '';
+  (wk.extras || [{ desc: '', amount: '', date: '' }]).forEach(e => {
+    const row = document.createElement('div');
+    row.className = 'extra-row';
+    row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+    row.innerHTML = `
+      <input class="form-input" style="flex:2;" placeholder="Descripción" data-extra-desc value="${e.desc || ''}">
+      <input class="form-input mono" style="flex:1;" placeholder="$0" data-extra-amount value="${e.amount || ''}">
+      <input class="form-input mono" style="flex:1;" placeholder="Fecha" data-extra-date value="${e.date || ''}">
+      <button class="btn" onclick="removeExtraRow(this)" style="padding:8px 10px;flex-shrink:0;">✕</button>
+    `;
+    extCont.appendChild(row);
+  });
+
+  buildWorkerInputs(wk);
+
+  const gruaCont = document.getElementById('grua-week-inputs');
+  gruaCont.innerHTML = '';
+  (wk.gruasServicio || []).forEach(g => addGruaWeekRow(g));
+
+  const basuraCont = document.getElementById('basura-week-inputs');
+  basuraCont.innerHTML = '';
+  (wk.basuraServicio || []).forEach(b => addBasuraWeekRow(b));
+
+  document.getElementById('modal-semana').classList.add('open');
+  setTimeout(calcTotal, 50);
+}
+
+function deleteWeek(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar esta semana?')) return;
+  data.weeks = data.weeks.filter(w => w.id !== id);
+  saveData();
+  renderSemanas();
+}
+
+function closeModal() {
+  document.getElementById('modal-semana').classList.remove('open');
+}
+
+function saveWeek() {
+  const editId = document.getElementById('editWeekId').value;
+  const num = parseInt(document.getElementById('f-weeknum').value) || data.weeks.length + 1;
+  const period = document.getElementById('f-period').value;
+  const bruto = document.getElementById('f-bruto').value;
+  const palets = document.getElementById('f-palets').value;
+  const total = parseInt(document.getElementById('f-total').value) || 0;
+  const paydate = document.getElementById('f-paydate').value;
+  const notes = document.getElementById('f-notes').value;
+
+  // Collect workers
+  const workers = {};
+  document.querySelectorAll('[data-worker]').forEach(wDiv => {
+    const wid = wDiv.getAttribute('data-worker');
+    const days = parseInt(wDiv.querySelector('[data-days]').value) || 5;
+    const bonus = parseInt(wDiv.querySelector('[data-bonus]').value) || 0;
+    const advances = [];
+    wDiv.querySelectorAll('[data-adv-row]').forEach(r => {
+      const date = r.querySelector('[data-adv-date]').value;
+      const amount = parseInt(r.querySelector('[data-adv-amt]').value) || 0;
+      if (amount > 0 || date) advances.push({ date, amount });
+    });
+    workers[wid] = { days, bonus, advances };
+  });
+
+  // Collect extras
+  const extras = [];
+  document.querySelectorAll('.extra-row').forEach(row => {
+    const desc = row.querySelector('[data-extra-desc]').value;
+    const amount = parseInt(row.querySelector('[data-extra-amount]').value) || 0;
+    const date = row.querySelector('[data-extra-date]').value;
+    if (desc || amount) extras.push({ desc, amount, date });
+  });
+
+  // Collect grúas de semana
+  const gruasServicio = [];
+  document.querySelectorAll('.grua-week-row').forEach(row => {
+    const empresa = row.querySelector('[data-grua-empresa]').value.trim();
+    const fecha = row.querySelector('[data-grua-fecha]').value.trim();
+    const desc = row.querySelector('[data-grua-desc]').value.trim();
+    const monto = parseInt(row.querySelector('[data-grua-monto]').value) || 0;
+    if (empresa || monto) gruasServicio.push({ empresa, fecha, desc, monto });
+  });
+
+  // Collect botes de basura
+  const basuraServicio = [];
+  document.querySelectorAll('.basura-week-row').forEach(row => {
+    const fecha = row.querySelector('[data-basura-fecha]').value.trim();
+    const monto = parseInt(row.querySelector('[data-basura-monto]').value) || 0;
+    if (monto) basuraServicio.push({ fecha, monto });
+  });
+
+  const weekData = { num, period, bruto: bruto || null, palets: palets || null, workers, extras, gruasServicio, basuraServicio, total, paydate, notes };
+
+  if (editId) {
+    const idx = data.weeks.findIndex(w => w.id == editId);
+    if (idx !== -1) { data.weeks[idx] = { ...data.weeks[idx], ...weekData }; }
+  } else {
+    weekData.id = Date.now();
+    data.weeks.push(weekData);
+    data.weeks.sort((a, b) => a.num - b.num);
+  }
+
+  saveData();
+  closeModal();
+  renderSemanas();
+  renderDashboard();
+}
+
+function openGruaModal(grua) {
+  document.getElementById('editGruaId').value = '';
+  document.getElementById('g-empresa').value = '';
+  document.getElementById('g-fecha').value = '';
+  document.getElementById('g-semana').value = '';
+  document.getElementById('g-desc').value = '';
+  document.getElementById('g-monto').value = '';
+  document.getElementById('modal-grua').classList.add('open');
+}
+
+function editGrua(id) {
+  const g = (data.gruas || []).find(x => x.id === id);
+  if (!g) return;
+  document.getElementById('editGruaId').value = id;
+  document.getElementById('g-empresa').value = g.empresa || '';
+  document.getElementById('g-fecha').value = g.fecha || '';
+  document.getElementById('g-semana').value = g.semana || '';
+  document.getElementById('g-desc').value = g.desc || '';
+  document.getElementById('g-monto').value = g.monto || '';
+  document.getElementById('modal-grua').classList.add('open');
+}
+
+function deleteGrua(id) {
+  if (!confirm('¿Eliminar este servicio de grúa?')) return;
+  data.gruas = (data.gruas || []).filter(g => g.id !== id);
+  saveData();
+  renderGruas();
+  renderDashboard();
+}
+
+function closeGruaModal() {
+  document.getElementById('modal-grua').classList.remove('open');
+}
+
+function saveGrua() {
+  const editId = document.getElementById('editGruaId').value;
+  const empresa = document.getElementById('g-empresa').value.trim();
+  const fecha = document.getElementById('g-fecha').value.trim();
+  const semana = parseInt(document.getElementById('g-semana').value) || 0;
+  const desc = document.getElementById('g-desc').value.trim();
+  const monto = parseInt(document.getElementById('g-monto').value) || 0;
+  if (!empresa) { alert('Ingresa el nombre de la empresa.'); return; }
+  if (!data.gruas) data.gruas = [];
+  if (editId) {
+    const idx = data.gruas.findIndex(g => g.id == editId);
+    if (idx !== -1) data.gruas[idx] = { ...data.gruas[idx], empresa, fecha, semana, desc, monto };
+  } else {
+    data.gruas.push({ id: Date.now(), empresa, fecha, semana, desc, monto });
+  }
+  saveData();
+  closeGruaModal();
+  renderGruas();
+  renderDashboard();
+}
+
+// ───────────────────── EXPORT MENU ─────────────────────
+function toggleExportMenu() {
+  const m = document.getElementById('export-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('export-btn').contains(e.target))
+    document.getElementById('export-menu').style.display = 'none';
+});
+
+function exportJSON() {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'sufrideras_eurohinca_2026.json'; a.click();
+  document.getElementById('export-menu').style.display = 'none';
+}
+
+// ───────────────────── EXPORT EXCEL ─────────────────────
+function exportExcel() {
+  document.getElementById('export-menu').style.display = 'none';
+  if (typeof XLSX === 'undefined') { alert('Librería Excel aún cargando, intenta en un momento.'); return; }
+  const wb = XLSX.utils.book_new();
+
+  // Sheet: Resumen
+  const sumRows = [
+    ['SUFRIDERAS EUROHINCA 2026 — RESUMEN GENERAL'],
+    [],
+    ['Semana','Período','Mano de Obra','Grúas','Bote de Basura','Gastos Extra','TOTAL'],
+  ];
+  data.weeks.forEach(wk => {
+    const wo = getWorkerTotal(wk), gr = getGruasWeekTotal(wk),
+          ba = getBasuraWeekTotal(wk), ex = getExtrasTotal(wk);
+    sumRows.push([`Semana ${wk.num}`, wk.period, wo, gr, ba, ex, wo+gr+ba+ex]);
+  });
+  const totalWo = data.weeks.reduce((a,w)=>a+getWorkerTotal(w),0);
+  const totalGr = data.weeks.reduce((a,w)=>a+getGruasWeekTotal(w),0);
+  const totalBa = data.weeks.reduce((a,w)=>a+getBasuraWeekTotal(w),0);
+  const totalEx = data.weeks.reduce((a,w)=>a+getExtrasTotal(w),0);
+  sumRows.push([]);
+  sumRows.push(['TOTALES','', totalWo, totalGr, totalBa, totalEx, totalWo+totalGr+totalBa+totalEx]);
+  if ((data.gruas||[]).length) {
+    sumRows.push([]);
+    sumRows.push(['Gastos fuera de semana:']);
+    (data.gruas||[]).forEach(g => sumRows.push([g.empresa, g.fecha, '', '', '', '', g.monto]));
+  }
+  const wsSummary = XLSX.utils.aoa_to_sheet(sumRows);
+  wsSummary['!cols'] = [{wch:12},{wch:22},{wch:16},{wch:12},{wch:16},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Resumen');
+
+  // One sheet per week
+  data.weeks.forEach(wk => {
+    const rows = [
+      [`SEMANA #${wk.num} — ${wk.period}`],[],
+      ['PRODUCCIÓN'],
+      ['Piezas en bruto', wk.bruto||'—'],
+      ['Palets terminados', wk.palets||'—'],
+      [],
+      ['TRABAJADORES','Tarifa/día','Días','Bono','Adelantos','Total'],
+    ];
+    WORKERS.forEach(w => {
+      const wd = wk.workers[w.id]; if(!wd) return;
+      const base = w.rate * wd.days, bonus = wd.bonus||0;
+      const adv = (wd.advances||[]).reduce((a,x)=>a+(Number(x.amount)||0),0);
+      rows.push([w.name, w.rate, wd.days, bonus||'', adv||'', base+bonus]);
+    });
+    rows.push(['TOTAL MANO DE OBRA','','','','', getWorkerTotal(wk)]);
+    rows.push([]);
+    rows.push(['GRÚAS','Empresa','Fecha','Descripción','','Monto']);
+    (wk.gruasServicio||[]).forEach(g => rows.push(['',g.empresa,g.fecha,g.desc,'',g.monto]));
+    rows.push(['TOTAL GRÚAS','','','','',getGruasWeekTotal(wk)]);
+    rows.push([]);
+    rows.push(['BOTE DE BASURA','Fecha','','','','Monto']);
+    (wk.basuraServicio||[]).forEach(b => rows.push(['',b.fecha,'','','',b.monto]));
+    rows.push(['TOTAL BASURA','','','','',getBasuraWeekTotal(wk)]);
+    rows.push([]);
+    rows.push(['GASTOS ADICIONALES','Descripción','Fecha','','','Monto']);
+    (wk.extras||[]).forEach(e => rows.push(['',e.desc,e.date,'','',e.amount]));
+    rows.push(['TOTAL GASTOS','','','','',getExtrasTotal(wk)]);
+    rows.push([]);
+    const tot = getWorkerTotal(wk)+getGruasWeekTotal(wk)+getBasuraWeekTotal(wk)+getExtrasTotal(wk);
+    rows.push(['TOTAL GENERAL','','','','',tot]);
+    rows.push(['Fecha de pago', wk.paydate||'']);
+    if (wk.notes) rows.push(['Notas', wk.notes]);
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:22},{wch:20},{wch:10},{wch:18},{wch:10},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws, `Semana ${wk.num}`);
+  });
+
+  XLSX.writeFile(wb, 'sufrideras_eurohinca_2026.xlsx');
+}
+
+// ───────────────────── EXPORT PDF ─────────────────────
+function exportPDF() {
+  document.getElementById('export-menu').style.display = 'none';
+  const w = window.open('', '_blank');
+  const totalGlobal = data.weeks.reduce((a,wk)=>a+getWorkerTotal(wk)+getGruasWeekTotal(wk)+getBasuraWeekTotal(wk)+getExtrasTotal(wk),0);
+
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Sufrideras Eurohinca 2026</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:10pt;color:#111;background:#fff;padding:24px}
+    h1{font-size:16pt;font-weight:800;color:#1a1a1a;margin-bottom:2px}
+    .subtitle{font-size:9pt;color:#666;margin-bottom:16px}
+    .summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+    .scard{border:1px solid #ddd;border-radius:6px;padding:10px 12px}
+    .scard-label{font-size:7.5pt;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}
+    .scard-value{font-size:14pt;font-weight:800}
+    .week{border:1px solid #ddd;border-radius:6px;margin-bottom:14px;overflow:hidden;page-break-inside:avoid}
+    .week-hdr{background:#1a1a1a;color:#e8c547;padding:9px 14px;font-weight:700;font-size:10pt;display:flex;justify-content:space-between}
+    .week-body{padding:12px 14px}
+    table{width:100%;border-collapse:collapse;font-size:9pt;margin-bottom:10px}
+    th{background:#f0f0f0;padding:5px 8px;text-align:left;font-size:8pt;text-transform:uppercase;color:#555;border:1px solid #ddd}
+    td{padding:5px 8px;border:1px solid #eee}
+    .section-lbl{font-size:8pt;font-weight:700;text-transform:uppercase;color:#888;margin:10px 0 4px}
+    .total-row{background:#f9f9f9;font-weight:700}
+    .grand-total{text-align:right;font-size:12pt;font-weight:800;color:#1a7a4a;margin-top:4px}
+    .pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:8pt;font-weight:700;margin-right:4px}
+    .pill-red{background:#fde;color:#c00}.pill-orange{background:#fef0e6;color:#b85a00}
+    .pill-purple{background:#f3effe;color:#6b3db5}.pill-blue{background:#e6f0fb;color:#1a5fa0}
+    .pill-green{background:#e6f7ed;color:#1a7a4a}
+    .notes{font-size:8.5pt;color:#555;font-style:italic;margin-top:6px;padding:6px 10px;background:#fafafa;border-left:3px solid #e8c547;border-radius:0 4px 4px 0}
+    @media print{body{padding:12px}.week{page-break-inside:avoid}}
+  </style></head><body>
+  <h1>Sufrideras Eurohinca 2026</h1>
+  <div class="subtitle">Reporte generado el ${new Date().toLocaleDateString('es-CL')} · ${data.weeks.length} semanas registradas</div>
+  <div class="summary-grid">
+    <div class="scard"><div class="scard-label">Total Invertido</div><div class="scard-value" style="color:#b5902a">${fmt(totalGlobal)}</div></div>
+    <div class="scard"><div class="scard-label">Mano de Obra</div><div class="scard-value" style="color:#c00">${fmt(data.weeks.reduce((a,w)=>a+getWorkerTotal(w),0))}</div></div>
+    <div class="scard"><div class="scard-label">Grúas</div><div class="scard-value" style="color:#b85a00">${fmt(data.weeks.reduce((a,w)=>a+getGruasWeekTotal(w),0))}</div></div>
+    <div class="scard"><div class="scard-label">Bote de Basura</div><div class="scard-value" style="color:#6b3db5">${fmt(data.weeks.reduce((a,w)=>a+getBasuraWeekTotal(w),0))}</div></div>
+    <div class="scard"><div class="scard-label">Gastos Extra</div><div class="scard-value" style="color:#1a5fa0">${fmt(data.weeks.reduce((a,w)=>a+getExtrasTotal(w),0))}</div></div>
+  </div>`;
+
+  data.weeks.forEach(wk => {
+    const wo=getWorkerTotal(wk),gr=getGruasWeekTotal(wk),ba=getBasuraWeekTotal(wk),ex=getExtrasTotal(wk),tot=wo+gr+ba+ex;
+    html += `<div class="week">
+      <div class="week-hdr">
+        <span>Semana #${wk.num} &nbsp;·&nbsp; ${wk.period}</span>
+        <span>${fmt(tot)}</span>
+      </div>
+      <div class="week-body">`;
+
+    if (wk.bruto||wk.palets) html+=`<div class="section-lbl">Producción</div>
+      <table><tr><th>Piezas en bruto</th><th>Palets terminados</th></tr>
+      <tr><td>${wk.bruto||'—'}</td><td>${wk.palets||'—'}</td></tr></table>`;
+
+    html+=`<div class="section-lbl">Trabajadores</div>
+      <table><tr><th>Nombre</th><th>Tarifa</th><th>Días</th><th>Bono</th><th>Adelantos</th><th>Total</th></tr>`;
+    WORKERS.forEach(w=>{
+      const wd=wk.workers[w.id]; if(!wd)return;
+      const adv=(wd.advances||[]).reduce((a,x)=>a+(Number(x.amount)||0),0);
+      const advStr=(wd.advances||[]).filter(a=>a.amount>0).map(a=>`${a.date?a.date+': ':''}${fmt(a.amount)}`).join(', ')||'—';
+      html+=`<tr><td><b>${w.name}</b></td><td>${fmt(w.rate)}</td><td>${wd.days}d</td><td>${wd.bonus?fmt(wd.bonus):'—'}</td><td style="font-size:8pt">${advStr}</td><td style="font-weight:700">${fmt(w.rate*wd.days+(wd.bonus||0))}</td></tr>`;
+    });
+    html+=`<tr class="total-row"><td colspan="5" style="text-align:right">Total Mano de Obra</td><td>${fmt(wo)}</td></tr></table>`;
+
+    if((wk.gruasServicio||[]).length){html+=`<div class="section-lbl">🚛 Servicio de Grúa</div>
+      <table><tr><th>Empresa</th><th>Fecha</th><th>Descripción</th><th>Monto</th></tr>`;
+      wk.gruasServicio.forEach(g=>html+=`<tr><td>${g.empresa}</td><td>${g.fecha}</td><td>${g.desc||'—'}</td><td>${fmt(g.monto)}</td></tr>`);
+      html+=`<tr class="total-row"><td colspan="3" style="text-align:right">Total Grúas</td><td>${fmt(gr)}</td></tr></table>`;}
+
+    if((wk.basuraServicio||[]).length){html+=`<div class="section-lbl">🗑️ Bote de Basura</div>
+      <table><tr><th>Fecha</th><th>Monto</th></tr>`;
+      wk.basuraServicio.forEach(b=>html+=`<tr><td>${b.fecha}</td><td>${fmt(b.monto)}</td></tr>`);
+      html+=`<tr class="total-row"><td style="text-align:right">Total Basura</td><td>${fmt(ba)}</td></tr></table>`;}
+
+    if((wk.extras||[]).length){html+=`<div class="section-lbl">💸 Gastos Adicionales</div>
+      <table><tr><th>Descripción</th><th>Fecha</th><th>Monto</th></tr>`;
+      wk.extras.forEach(e=>html+=`<tr><td>${e.desc}</td><td>${e.date||'—'}</td><td>${fmt(e.amount)}</td></tr>`);
+      html+=`<tr class="total-row"><td colspan="2" style="text-align:right">Total Extra</td><td>${fmt(ex)}</td></tr></table>`;}
+
+    html+=`<div class="grand-total">Total Semana: ${fmt(tot)}</div>`;
+    html+=`<div style="font-size:9pt;color:#555;margin-top:6px">Fecha de pago: <b>${wk.paydate||'—'}</b></div>`;
+    if(wk.notes) html+=`<div class="notes">📌 ${wk.notes}</div>`;
+    html+=`</div></div>`;
+  });
+
+  html+=`</body></html>`;
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(), 600);
+}
+
+// ───────────────────── IMPORT EXCEL ─────────────────────
+function importExcel(input) {
+  const file = input.files[0]; if (!file) return;
+  if (typeof XLSX === 'undefined') { alert('Librería Excel aún cargando.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      let imported = 0;
+      wb.SheetNames.forEach(name => {
+        const m = name.match(/[Ss]emana[_\s]?(\d+)/);
+        if (!m) return;
+        const num = parseInt(m[1]);
+        const ws = wb.Sheets[name];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+        // Parse period from row 0
+        const titleRow = (rows[0]||[''])[0]+'';
+        const periodMatch = titleRow.match(/[\d]{2}-[\d]{2}-[\d]{2}.+[\d]{2}-[\d]{2}-[\d]{2}/);
+
+        // Find worker data
+        const workerMap = {};
+        let inWorkers = false;
+        rows.forEach(row => {
+          if ((row[0]+'').toUpperCase().includes('TRABAJADOR')) { inWorkers = true; return; }
+          if ((row[0]+'').toUpperCase().includes('TOTAL MANO')) { inWorkers = false; return; }
+          if (inWorkers && row[0]) {
+            const wName = (row[0]+'').toLowerCase();
+            const w = WORKERS.find(x => wName.includes(x.id));
+            if (w) {
+              workerMap[w.id] = {
+                days: parseInt(row[2])||5,
+                bonus: parseInt(row[3])||0,
+                advances: parseInt(row[4]) ? [{ date: '', amount: parseInt(row[4]) }] : [],
+              };
+            }
+          }
+        });
+
+        // Parse grúas, basura, extras, total, paydate, notes
+        const gruasServicio=[], basuraServicio=[], extras=[];
+        let inGruas=false, inBasura=false, inExtras=false;
+        let paydate='', notes='', bruto=null, palets=null;
+        rows.forEach(row => {
+          const r0=(row[0]+'').toUpperCase();
+          if (r0.includes('GRÚA')||r0.includes('GRUA')) { inGruas=true; inBasura=false; inExtras=false; return; }
+          if (r0.includes('BASURA')) { inBasura=true; inGruas=false; inExtras=false; return; }
+          if (r0.includes('GASTOS')) { inExtras=true; inGruas=false; inBasura=false; return; }
+          if (r0.includes('TOTAL')||r0.includes('FECHA DE PAGO')||r0.includes('NOTAS')) { inGruas=false; inBasura=false; inExtras=false; }
+          if (r0.includes('FECHA DE PAGO') && row[1]) paydate = row[1]+'';
+          if (r0.includes('NOTAS') && row[1]) notes = row[1]+'';
+          if (r0.includes('PIEZAS') && row[1]) bruto = parseInt(row[1])||null;
+          if (r0.includes('PALETS') && row[1]) palets = parseInt(row[1])||null;
+          if (inGruas && row[1] && row[5]) gruasServicio.push({empresa:row[1]+'',fecha:row[2]+'',desc:row[3]+'',monto:parseInt(row[5])||0});
+          if (inBasura && row[1] && row[5]) basuraServicio.push({fecha:row[1]+'',monto:parseInt(row[5])||0});
+          if (inExtras && row[1] && row[5]) extras.push({desc:row[1]+'',date:row[2]+'',amount:parseInt(row[5])||0});
+        });
+
+        // Fill missing workers with defaults
+        WORKERS.forEach(w => { if (!workerMap[w.id]) workerMap[w.id] = { days:5, bonus:0, advances:[] }; });
+
+        const existing = data.weeks.findIndex(w => w.num === num);
+        const weekObj = {
+          id: existing >= 0 ? data.weeks[existing].id : Date.now() + num,
+          num, period: periodMatch ? periodMatch[0] : '',
+          bruto, palets,
+          workers: workerMap,
+          gruasServicio, basuraServicio, extras,
+          total: 0, paydate, notes
+        };
+        // recalc total
+        weekObj.total = getWorkerTotal(weekObj)+getGruasWeekTotal(weekObj)+getBasuraWeekTotal(weekObj)+getExtrasTotal(weekObj);
+        if (existing >= 0) data.weeks[existing] = weekObj;
+        else data.weeks.push(weekObj);
+        data.weeks.sort((a,b)=>a.num-b.num);
+        imported++;
+      });
+      if (imported > 0) {
+        saveData();
+        renderDashboard();
+        renderSemanas();
+        alert(`✅ Se importaron ${imported} semana(s) correctamente.`);
+      } else {
+        alert('No se encontraron hojas de semana en el archivo.\nAsegúrate de usar la plantilla oficial.');
+      }
+    } catch(err) {
+      alert('Error al leer el archivo: ' + err.message);
+    }
+    input.value = '';
+  };
+  reader.readAsBinaryString(file);
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH SYSTEM
+// ═══════════════════════════════════════════════════
+
+const AUTH_KEY  = 'sufrideras_auth';
+const EJSKEY    = 'sufrideras_ejs';
+const SESSION_KEY = 'sufrideras_session';
+
+// ── SHA-256 hash (irreversible) ─────────────────────
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function getAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // Default credentials — password stored as SHA-256 hash (irreversible)
+  return {
+    username: 'contacto@cncprojects.cl',
+    password: '043b2995363c07bf2c6f9dfd6b944e8412a7599317066da71fc18cb00085837b'
+  };
+}
+
+function saveAuth(obj) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(obj));
+}
+
+function getEJSConfig() {
+  try { return JSON.parse(localStorage.getItem(EJSKEY) || '{}'); } catch(e) { return {}; }
+}
+
+function saveEJSConfig(cfg) {
+  localStorage.setItem(EJSKEY, JSON.stringify(cfg));
+}
+
+let resetCode = null;
+let resetExpiry = null;
+
+// ── Boot: check session ─────────────────────────────
+function bootAuth() {
+  // Always show login on every page load — no session persistence
+  const ejs = getEJSConfig();
+  if (ejs.pubkey)   document.getElementById('ejs-pubkey').value   = ejs.pubkey;
+  if (ejs.service)  document.getElementById('ejs-service').value  = ejs.service;
+  if (ejs.template) document.getElementById('ejs-template').value = ejs.template;
+  if (ejs.email)    document.getElementById('ejs-email').value    = ejs.email;
+  if (ejs.pubkey) emailjs.init(ejs.pubkey);
+
+  ['login-user','login-pass'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  });
+}
+
+function showApp() {
+  document.getElementById('auth-layer').style.display = 'none';
+  document.getElementById('app-root').style.display   = 'block';
+  setTimeout(() => renderDashboard(), 100);
+}
+
+function showLogin() {
+  document.getElementById('auth-layer').style.display = 'flex';
+  document.getElementById('app-root').style.display   = 'none';
+}
+
+function switchPanel(id) {
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Clear messages
+  ['login-error','forgot-error','forgot-success'].forEach(x => {
+    const el = document.getElementById(x); if(el){ el.style.display='none'; el.textContent=''; }
+  });
+}
+
+// ── Login ───────────────────────────────────────────
+async function doLogin() {
+  const user  = document.getElementById('login-user').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  const auth  = getAuth();
+  const hashed = await sha256(pass);
+
+  if (user === auth.username && hashed === auth.password) {
+    errEl.style.display = 'none';
+    showApp();
+  } else {
+    errEl.textContent = 'Usuario o contraseña incorrectos.';
+    errEl.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+}
+
+// ── Logout ──────────────────────────────────────────
+function doLogout() {
+  closeSettings();
+  showLogin();
+}
+
+// ── Forgot password: send code ──────────────────────
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const errEl = document.getElementById('forgot-error');
+  const okEl  = document.getElementById('forgot-success');
+  const btn   = document.getElementById('forgot-btn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  const ejs = getEJSConfig();
+  if (!ejs.pubkey || !ejs.service || !ejs.template) {
+    errEl.textContent = 'EmailJS no configurado. Pide al administrador que configure las credenciales en ⚙️ Ajustes → EmailJS.';
+    errEl.style.display = 'block'; return;
+  }
+  if (!email) {
+    errEl.textContent = 'Ingresa tu correo electrónico.';
+    errEl.style.display = 'block'; return;
+  }
+  if (email !== ejs.email) {
+    errEl.textContent = 'El correo no coincide con el registrado.';
+    errEl.style.display = 'block'; return;
+  }
+
+  // Generate 6-digit code
+  resetCode   = Math.floor(100000 + Math.random() * 900000).toString();
+  resetExpiry = Date.now() + 10 * 60 * 1000; // 10 min
+
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    await emailjs.send(ejs.service, ejs.template, {
+      to_email:   email,
+      reset_code: resetCode,
+      app_name:   'Sufrideras Eurohinca 2026',
+    });
+    okEl.textContent = `✅ Código enviado a ${email}. Válido por 10 minutos.`;
+    okEl.style.display = 'block';
+    btn.textContent = 'Reenviar código';
+  } catch(err) {
+    errEl.textContent = 'Error al enviar el correo: ' + (err.text || err.message || 'verifica la configuración de EmailJS.');
+    errEl.style.display = 'block';
+    resetCode = null;
+    btn.textContent = 'Enviar código';
+  }
+  btn.disabled = false;
+}
+
+// ── Reset password with code ────────────────────────
+async function doResetPassword() {
+  const code    = document.getElementById('forgot-code').value.trim();
+  const newpass = document.getElementById('forgot-newpass').value;
+  const errEl   = document.getElementById('forgot-error');
+  const okEl    = document.getElementById('forgot-success');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  if (!resetCode) {
+    errEl.textContent = 'Primero solicita un código de recuperación.';
+    errEl.style.display = 'block'; return;
+  }
+  if (Date.now() > resetExpiry) {
+    errEl.textContent = 'El código ha expirado. Solicita uno nuevo.';
+    errEl.style.display = 'block'; resetCode = null; return;
+  }
+  if (code !== resetCode) {
+    errEl.textContent = 'Código incorrecto.';
+    errEl.style.display = 'block'; return;
+  }
+  if (newpass.length < 6) {
+    errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+    errEl.style.display = 'block'; return;
+  }
+  const auth = getAuth();
+  auth.password = await sha256(newpass);
+  saveAuth(auth);
+  resetCode = null;
+  okEl.textContent = '✅ Contraseña cambiada exitosamente. Ya puedes iniciar sesión.';
+  okEl.style.display = 'block';
+  document.getElementById('forgot-code').value    = '';
+  document.getElementById('forgot-newpass').value = '';
+  setTimeout(() => switchPanel('panel-login'), 2500);
+}
+
+// ── Settings modal ──────────────────────────────────
+function openSettings() {
+  const auth = getAuth();
+  document.getElementById('s-username').value = auth.username;
+  document.getElementById('modal-settings').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('modal-settings').classList.remove('open');
+  // Clear all settings fields + messages
+  ['s-old-pass','s-new-pass','s-confirm-pass','s-user-pass'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['settings-pass-error','settings-pass-ok','settings-user-ok','settings-user-error','emailjs-saved'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.textContent=''; }
+  });
+}
+
+function settingsTab(id) {
+  document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+async function changePassword() {
+  const oldp  = document.getElementById('s-old-pass').value;
+  const newp  = document.getElementById('s-new-pass').value;
+  const conf  = document.getElementById('s-confirm-pass').value;
+  const errEl = document.getElementById('settings-pass-error');
+  const okEl  = document.getElementById('settings-pass-ok');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  const auth = getAuth();
+  const oldHash = await sha256(oldp);
+  if (oldHash !== auth.password) {
+    errEl.textContent = 'La contraseña actual es incorrecta.';
+    errEl.style.display = 'block'; return;
+  }
+  if (newp.length < 6) {
+    errEl.textContent = 'La nueva contraseña debe tener al menos 6 caracteres.';
+    errEl.style.display = 'block'; return;
+  }
+  if (newp !== conf) {
+    errEl.textContent = 'Las contraseñas no coinciden.';
+    errEl.style.display = 'block'; return;
+  }
+  auth.password = await sha256(newp);
+  saveAuth(auth);
+  okEl.textContent = '✅ Contraseña actualizada correctamente.';
+  okEl.style.display = 'block';
+  document.getElementById('s-old-pass').value     = '';
+  document.getElementById('s-new-pass').value     = '';
+  document.getElementById('s-confirm-pass').value = '';
+}
+
+async function changeUsername() {
+  const newUser = document.getElementById('s-username').value.trim();
+  const pass    = document.getElementById('s-user-pass').value;
+  const errEl   = document.getElementById('settings-user-error');
+  const okEl    = document.getElementById('settings-user-ok');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  if (!newUser) {
+    errEl.textContent = 'Ingresa un nombre de usuario.';
+    errEl.style.display = 'block'; return;
+  }
+  const auth = getAuth();
+  const hashed = await sha256(pass);
+  if (hashed !== auth.password) {
+    errEl.textContent = 'Contraseña incorrecta.';
+    errEl.style.display = 'block'; return;
+  }
+  auth.username = newUser;
+  saveAuth(auth);
+  okEl.textContent = `✅ Usuario cambiado a "${newUser}".`;
+  okEl.style.display = 'block';
+  document.getElementById('s-user-pass').value = '';
+}
+
+function saveEmailJSConfig() {
+  const cfg = {
+    pubkey:   document.getElementById('ejs-pubkey').value.trim(),
+    service:  document.getElementById('ejs-service').value.trim(),
+    template: document.getElementById('ejs-template').value.trim(),
+    email:    document.getElementById('ejs-email').value.trim(),
+  };
+  if (!cfg.pubkey || !cfg.service || !cfg.template || !cfg.email) {
+    alert('Completa todos los campos.'); return;
+  }
+  saveEJSConfig(cfg);
+  emailjs.init(cfg.pubkey);
+  const okEl = document.getElementById('emailjs-saved');
+  okEl.textContent = '✅ Configuración guardada. Ya puedes usar la recuperación por correo.';
+  okEl.style.display = 'block';
+}
+
+// ───────────────────── INIT ─────────────────────
+bootAuth();
+document.getElementById('modal-semana').addEventListener('input', calcTotal);
+</script>
+</body>
+</html>
