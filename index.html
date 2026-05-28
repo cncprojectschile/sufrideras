@@ -1089,12 +1089,18 @@ async function saveData() {
         'apikey': SUPA_KEY,
         'Authorization': `Bearer ${SUPA_KEY}`,
         'Prefer': 'return=minimal',
-        'x-client-info': 'sufrideras'
+        'Content-Profile': 'public',
+        'Accept-Profile': 'public'
       },
       body: JSON.stringify({ data: data, updated_at: new Date().toISOString() })
     });
-    if (res.ok) showSync('✓ Guardado en nube', 'var(--green)');
-    else { console.error('Save error:', res.status, await res.text()); showSync('⚠ Error al guardar', 'var(--red)'); }
+    if (res.ok) {
+      showSync('✓ Guardado en nube', 'var(--green)');
+    } else {
+      const errText = await res.text();
+      console.error('Save error:', res.status, errText);
+      showSync('⚠ Error: ' + res.status, 'var(--red)');
+    }
   } catch(e) {
     showSync('⚠ Sin conexión', 'var(--red)');
     console.warn('Error guardando:', e);
@@ -1107,10 +1113,13 @@ async function loadFromCloud() {
       headers: {
         'apikey': SUPA_KEY,
         'Authorization': `Bearer ${SUPA_KEY}`,
-        'x-client-info': 'sufrideras'
+        'Accept-Profile': 'public'
       }
     });
-    if (!res.ok) { console.error('Load error:', res.status, await res.text()); return; }
+    if (!res.ok) {
+      console.error('Load error:', res.status, await res.text());
+      return;
+    }
     const rows = await res.json();
     if (rows && rows[0] && rows[0].data && rows[0].data.weeks && rows[0].data.weeks.length > 0) {
       data = rows[0].data;
@@ -1123,7 +1132,8 @@ async function loadFromCloud() {
           'Content-Type': 'application/json',
           'apikey': SUPA_KEY,
           'Authorization': `Bearer ${SUPA_KEY}`,
-          'Prefer': 'return=minimal'
+          'Prefer': 'return=minimal',
+          'Content-Profile': 'public'
         },
         body: JSON.stringify({ data: data, updated_at: new Date().toISOString() })
       });
