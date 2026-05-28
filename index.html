@@ -2180,26 +2180,29 @@ function doImport(file, input) {
         };
 
         rows.forEach(row => {
-          // All content is in col B (index 1), col A is always empty
-          const c = i => (row[i]!==undefined ? (row[i]+'').trim() : '');
-          const c1 = c(1);  // col B — main content column
+          const c = i => (row[i]!==undefined && row[i]!==null ? (row[i]+'').trim() : '');
+          const c1 = c(1);
           const c1up = c1.toUpperCase();
 
-          // Section detection — all headers are in col B
-          if (c1up.includes('PRODUCCIÓN')||c1up.includes('PRODUCCION')) { section='prod'; return; }
+          // Skip rows where col B is empty (only have formula zeros in col H)
+          if (!c1) return;
+
+          // Section detection
+          if (c1up.includes('PRODUCCI')) { section='prod'; return; }
           if (c1up.includes('TRABAJADOR')) { section='workers'; return; }
-          if (c1up.includes('GR\u00DAA')||c1up.includes('GRUA')||c1up.includes('SERVICIO DE G')||c1.includes('🚛')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (c1up.includes('BOTE')||c1up.includes('BASURA')||c1.includes('🗑')) { section='basura'; return; }
-          if (c1up.includes('GASTOS')) { section='extras'; return; }
-          if (c1up.includes('CIERRE')) { section='cierre'; return; }
+          if (c1.includes('🚛')||c1up.includes('SERVICIO DE G')||c1up.includes('GR\u00DAA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c1.includes('🗑')||c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
+          if (c1.includes('💸')||(c1up.includes('GASTOS')&&c1up.includes('ADICIONAL'))) { section='extras'; return; }
+          if (c1.includes('✅')||c1up.includes('CIERRE')) { section='cierre'; return; }
           if (c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
           if (c1up.startsWith('TOTAL')) return;
-          if (c1up.includes('CAMPO')||c1up.includes('NOMBRE')||c1up.includes('EMPRESA')||c1up.includes('FECHA')||c1up.includes('DESCRIPCIÓN')) return; // skip header rows
+          // Skip column header rows
+          if (c1up==='CAMPO'||c1up==='NOMBRE'||c1up==='EMPRESA'||c1up==='DESCRIPCIÓN'||c1up==='DESCRIPCION') return;
+          // Skip the "Día/Fecha" subheader row inside workers
+          if (c1up.includes('D\u00CDAFECHA')||c1up.includes('DIA/FECHA')||c1up==='FECHA') return;
 
-          // Period — from title row
-          if (!period && c1.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/)) {
-            period = c1;
-          }
+          // Period
+          if (!period && c1.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/)) period = c1;
 
           if (section==='prod') {
             if (c1up.includes('PIEZAS')) bruto = parseInt(c(4))||null;
@@ -2207,7 +2210,6 @@ function doImport(file, input) {
           }
 
           if (section==='workers') {
-            // Worker row: col B = name, col D = days (idx 3), col E = bonus (idx 4)
             const wMatch = WORKERS.find(w => c1.toLowerCase().includes(w.id));
             if (wMatch && !c1up.includes('ADELANTO')) {
               saveWorker();
@@ -2215,38 +2217,29 @@ function doImport(file, input) {
               workerMap[wMatch.id] = { days: parseInt(c(3))||5, bonus: parseInt(c(4))||0, advances:[] };
               return;
             }
-            // Adelanto row: col B = "  Adelanto N", col D = fecha (idx 3), col G = monto (idx 6)
             if (c1up.includes('ADELANTO')) {
-              const fecha = c(3);
-              const monto = parseInt(c(6))||0;
-              if (fecha||monto) currentAdvances.push({date:fecha, amount:monto});
+              const fecha = c(3), monto = parseInt(c(6))||0;
+              if (fecha||monto>0) currentAdvances.push({date:fecha, amount:monto});
             }
           }
 
           if (section==='gruas') {
-            // col B=empresa (idx1), col D=fecha (idx3), col E=desc (idx4), col G=monto (idx6)
-            const empresa = c1;
             const monto = parseInt(c(6))||0;
-            if (empresa && monto > 0)
-              gruasServicio.push({empresa, fecha:c(3), desc:c(4), monto});
+            if (c1 && monto>0) gruasServicio.push({empresa:c1, fecha:c(3), desc:c(4), monto});
           }
 
           if (section==='basura') {
-            // col B=fecha (idx1), col G=monto (idx6)
-            const fecha = c1;
             const monto = parseInt(c(6))||0;
-            if (fecha && monto > 0) basuraServicio.push({fecha, monto});
+            if (c1 && monto>0) basuraServicio.push({fecha:c1, monto});
           }
 
           if (section==='extras') {
-            // col B=desc (idx1), col E=fecha (idx4), col G=monto (idx6)
-            const desc = c1;
             const monto = parseInt(c(6))||0;
-            if (desc && monto > 0) extras.push({desc, date:c(4), amount:monto});
+            if (c1 && monto>0) extras.push({desc:c1, date:c(4), amount:monto});
           }
 
           if (section==='cierre') {
-            if (c1up.includes('FECHA')) paydate = c(3);
+            if (c1up.includes('FECHA DE PAGO')||c1up==='FECHA DE PAGO') paydate = c(3);
             if (c1up.includes('NOTA')) notes = c(3);
           }
         });
