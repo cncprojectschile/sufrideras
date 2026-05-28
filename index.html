@@ -2182,42 +2182,40 @@ function doImport(file, input) {
         rows.forEach(row => {
           const c = i => (row[i]!==undefined && row[i]!==null ? (row[i]+'').trim() : '');
           const c1 = c(1);
-          const c1up = c1.toUpperCase();
-
-          // Skip rows where col B is empty (only have formula zeros in col H)
           if (!c1) return;
+          const c1up = c1.toUpperCase();
+          // Normalize: remove accents for robust comparison (GRÚA → GRUA, etc.)
+          const c1norm = c1up.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
           // Section detection
-          if (c1up.includes('PRODUCCI')) { section='prod'; return; }
-          if (c1up.includes('TRABAJADOR')) { section='workers'; return; }
-          if (c1.includes('🚛')||c1up.includes('SERVICIO DE G')||c1up.includes('GR\u00DAA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (c1.includes('🗑')||c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
-          if (c1.includes('💸')||(c1up.includes('GASTOS')&&c1up.includes('ADICIONAL'))) { section='extras'; return; }
-          if (c1.includes('✅')||c1up.includes('CIERRE')) { section='cierre'; return; }
-          if (c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
-          if (c1up.startsWith('TOTAL')) return;
-          // Skip column header rows
-          if (c1up==='CAMPO'||c1up==='NOMBRE'||c1up==='EMPRESA'||c1up==='DESCRIPCIÓN'||c1up==='DESCRIPCION') return;
-          // Skip the "Día/Fecha" subheader row inside workers
-          if (c1up.includes('D\u00CDAFECHA')||c1up.includes('DIA/FECHA')||c1up==='FECHA') return;
+          if (c1norm.includes('PRODUCCI')) { section='prod'; return; }
+          if (c1norm.includes('TRABAJADOR')) { section='workers'; return; }
+          if (c1.includes('🚛')||c1norm.includes('GRUA')||c1norm.includes('SERVICIO DE G')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c1.includes('🗑')||c1norm.includes('BOTE')||c1norm.includes('BASURA')) { section='basura'; return; }
+          if (c1.includes('💸')||(c1norm.includes('GASTOS')&&c1norm.includes('ADICIONAL'))) { section='extras'; return; }
+          if (c1.includes('✅')||c1norm.includes('CIERRE')) { section='cierre'; return; }
+          if (c1norm.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
+          if (c1norm.startsWith('TOTAL')) return;
+          if (['CAMPO','NOMBRE','EMPRESA','DESCRIPCION','DIA/FECHA','DIA FECHA'].includes(c1norm.replace(/[^A-Z/]/g,''))) return;
+          if (c1norm==='FECHA'||c1norm==='FECHA DE PAGO') { if(section==='cierre') paydate=c(3); return; }
 
           // Period
           if (!period && c1.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/)) period = c1;
 
           if (section==='prod') {
-            if (c1up.includes('PIEZAS')) bruto = parseInt(c(4))||null;
-            if (c1up.includes('PALET')) palets = parseInt(c(4))||null;
+            if (c1norm.includes('PIEZAS')) bruto = parseInt(c(4))||null;
+            if (c1norm.includes('PALET')) palets = parseInt(c(4))||null;
           }
 
           if (section==='workers') {
             const wMatch = WORKERS.find(w => c1.toLowerCase().includes(w.id));
-            if (wMatch && !c1up.includes('ADELANTO')) {
+            if (wMatch && !c1norm.includes('ADELANTO')) {
               saveWorker();
               currentWorker = wMatch.id;
               workerMap[wMatch.id] = { days: parseInt(c(3))||5, bonus: parseInt(c(4))||0, advances:[] };
               return;
             }
-            if (c1up.includes('ADELANTO')) {
+            if (c1norm.includes('ADELANTO')) {
               const fecha = c(3), monto = parseInt(c(6))||0;
               if (fecha||monto>0) currentAdvances.push({date:fecha, amount:monto});
             }
@@ -2239,8 +2237,7 @@ function doImport(file, input) {
           }
 
           if (section==='cierre') {
-            if (c1up.includes('FECHA DE PAGO')||c1up==='FECHA DE PAGO') paydate = c(3);
-            if (c1up.includes('NOTA')) notes = c(3);
+            if (c1norm.includes('NOTA')) notes = c(3);
           }
         });
 
