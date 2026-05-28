@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sufrideras Eurohinca 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 /* ── AUTH LAYER ───────────────────────────────────── */
 #auth-layer {
@@ -2125,7 +2126,20 @@ function exportPDF() {
 // ───────────────────── IMPORT EXCEL ─────────────────────
 function importExcel(input) {
   const file = input.files[0]; if (!file) return;
-  if (typeof XLSX === 'undefined') { alert('Librería Excel aún cargando.'); return; }
+  if (typeof XLSX === 'undefined') {
+    // Wait up to 5 seconds for XLSX to load
+    let tries = 0;
+    const wait = setInterval(() => {
+      tries++;
+      if (typeof XLSX !== 'undefined') { clearInterval(wait); doImport(file, input); }
+      else if (tries > 50) { clearInterval(wait); alert('Error: no se pudo cargar la librería Excel. Verifica tu conexión a internet.'); }
+    }, 100);
+    return;
+  }
+  doImport(file, input);
+}
+
+function doImport(file, input) {
   const reader = new FileReader();
   reader.onload = e => {
     try {
