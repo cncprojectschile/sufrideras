@@ -2187,17 +2187,17 @@ function doImport(file, input) {
           // Normalize: remove accents for robust comparison (GRÚA → GRUA, etc.)
           const c1norm = c1up.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
-          // Section detection
+          // Section detection — only match section HEADERS (contain emoji or "SERVICIO")
           if (c1norm.includes('PRODUCCI')) { section='prod'; return; }
-          if (c1norm.includes('TRABAJADOR')) { section='workers'; return; }
-          if (c1.includes('🚛')||c1norm.includes('GRUA')||c1norm.includes('SERVICIO DE G')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (c1.includes('🗑')||c1norm.includes('BOTE')||c1norm.includes('BASURA')) { section='basura'; return; }
+          if (c1norm.includes('TRABAJADOR')&&!WORKERS.some(w=>c1.toLowerCase().includes(w.id))) { section='workers'; return; }
+          if (c1.includes('🚛')||c1norm.includes('SERVICIO DE G')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c1.includes('🗑')||(c1norm.includes('BOTE')&&c1norm.includes('BASURA'))) { section='basura'; return; }
           if (c1.includes('💸')||(c1norm.includes('GASTOS')&&c1norm.includes('ADICIONAL'))) { section='extras'; return; }
           if (c1.includes('✅')||c1norm.includes('CIERRE')) { section='cierre'; return; }
           if (c1norm.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
           if (c1norm.startsWith('TOTAL')) return;
-          if (['CAMPO','NOMBRE','EMPRESA','DESCRIPCION','DIA/FECHA','DIA FECHA'].includes(c1norm.replace(/[^A-Z/]/g,''))) return;
-          if (c1norm==='FECHA'||c1norm==='FECHA DE PAGO') { if(section==='cierre') paydate=c(3); return; }
+          if (['CAMPO','NOMBRE','EMPRESA','DESCRIPCION'].includes(c1norm.replace(/[^A-Z]/g,''))) return;
+          if (c1norm==='FECHA'||c1norm==='DIADELFECHA'||c1norm.startsWith('DIA/')) return;
 
           // Period
           if (!period && c1.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/)) period = c1;
