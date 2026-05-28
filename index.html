@@ -2180,75 +2180,74 @@ function doImport(file, input) {
         };
 
         rows.forEach(row => {
-          // Flatten: convert all cells to trimmed strings for detection
+          // All content is in col B (index 1), col A is always empty
           const c = i => (row[i]!==undefined ? (row[i]+'').trim() : '');
-          const c0up = c(0).toUpperCase();
-          const c1up = c(1).toUpperCase();
+          const c1 = c(1);  // col B — main content column
+          const c1up = c1.toUpperCase();
 
-          // Section detection — check col A and col B
-          if (c0up.includes('PRODUCCIÓN')||c0up.includes('PRODUCCION')||c1up.includes('PRODUCCIÓN')) { section='prod'; return; }
-          if (c0up.includes('TRABAJADOR')||c1up.includes('TRABAJADOR')) { section='workers'; return; }
-          if (c0up.includes('GRÚA')||c0up.includes('GRUA')||c1up.includes('GRÚA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (c0up.includes('BOTE')||c0up.includes('BASURA')||c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
-          if (c0up.includes('GASTOS')||c1up.includes('GASTOS')) { section='extras'; return; }
-          if (c0up.includes('CIERRE')||c1up.includes('CIERRE')) { section='cierre'; return; }
-          if (c0up.includes('TOTAL MANO')||c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
-          if (c0up.startsWith('TOTAL')||c1up.startsWith('TOTAL')) return;
+          // Section detection — all headers are in col B
+          if (c1up.includes('PRODUCCIÓN')||c1up.includes('PRODUCCION')) { section='prod'; return; }
+          if (c1up.includes('TRABAJADOR')) { section='workers'; return; }
+          if (c1up.includes('GRÚA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
+          if (c1up.includes('GASTOS')) { section='extras'; return; }
+          if (c1up.includes('CIERRE')) { section='cierre'; return; }
+          if (c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
+          if (c1up.startsWith('TOTAL')) return;
+          if (c1up.includes('CAMPO')||c1up.includes('NOMBRE')||c1up.includes('EMPRESA')||c1up.includes('FECHA')||c1up.includes('DESCRIPCIÓN')) return; // skip header rows
 
-          // Period — from title row or period row
-          if (!period) {
-            const full = row.join(' ');
-            const pm = full.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/);
-            if (pm) period = pm[0];
+          // Period — from title row
+          if (!period && c1.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/)) {
+            period = c1;
           }
 
           if (section==='prod') {
-            if (c0up.includes('PIEZAS')||c1up.includes('PIEZAS')) bruto = parseInt(c(4))||parseInt(c(2))||null;
-            if (c0up.includes('PALET')||c1up.includes('PALET')) palets = parseInt(c(4))||parseInt(c(2))||null;
+            if (c1up.includes('PIEZAS')) bruto = parseInt(c(4))||null;
+            if (c1up.includes('PALET')) palets = parseInt(c(4))||null;
           }
 
           if (section==='workers') {
-            // Worker header row: col B = name, col D = days, col E = bonus
-            const nameCell = c(1);
-            const wMatch = WORKERS.find(w => nameCell.toLowerCase().includes(w.id));
-            if (wMatch && !c0up.includes('ADELANTO') && !c1up.includes('ADELANTO') && !c1up.includes('DÍA')) {
+            // Worker row: col B = name, col D = days (idx 3), col E = bonus (idx 4)
+            const wMatch = WORKERS.find(w => c1.toLowerCase().includes(w.id));
+            if (wMatch && !c1up.includes('ADELANTO')) {
               saveWorker();
               currentWorker = wMatch.id;
               workerMap[wMatch.id] = { days: parseInt(c(3))||5, bonus: parseInt(c(4))||0, advances:[] };
               return;
             }
-            // Adelanto row: col A or B contains "Adelanto", col D=fecha, col G=monto
-            if (c0up.includes('ADELANTO')||c1up.includes('ADELANTO')) {
+            // Adelanto row: col B = "  Adelanto N", col D = fecha (idx 3), col G = monto (idx 6)
+            if (c1up.includes('ADELANTO')) {
               const fecha = c(3);
-              const monto = parseInt(c(6))||parseInt(c(7))||0;
+              const monto = parseInt(c(6))||0;
               if (fecha||monto) currentAdvances.push({date:fecha, amount:monto});
             }
           }
 
           if (section==='gruas') {
-            const empresa = c(1);
-            const monto = parseInt(c(6))||parseInt(c(7))||0;
-            if (empresa && monto && !c1up.includes('EMPRESA') && !c1up.includes('TOTAL'))
+            // col B=empresa (idx1), col D=fecha (idx3), col E=desc (idx4), col G=monto (idx6)
+            const empresa = c1;
+            const monto = parseInt(c(6))||0;
+            if (empresa && monto)
               gruasServicio.push({empresa, fecha:c(3), desc:c(4), monto});
           }
 
           if (section==='basura') {
-            const fecha = c(1);
-            const monto = parseInt(c(6))||parseInt(c(7))||0;
-            if (fecha && monto && !c1up.includes('FECHA') && !c1up.includes('TOTAL'))
-              basuraServicio.push({fecha, monto});
+            // col B=fecha (idx1), col G=monto (idx6)
+            const fecha = c1;
+            const monto = parseInt(c(6))||0;
+            if (fecha && monto) basuraServicio.push({fecha, monto});
           }
 
           if (section==='extras') {
-            const desc = c(1);
-            const monto = parseInt(c(6))||parseInt(c(7))||0;
-            if (desc && monto && !c1up.includes('DESCRIPCIÓN') && !c1up.includes('TOTAL'))
-              extras.push({desc, date:c(4), amount:monto});
+            // col B=desc (idx1), col E=fecha (idx4), col G=monto (idx6)
+            const desc = c1;
+            const monto = parseInt(c(6))||0;
+            if (desc && monto) extras.push({desc, date:c(4), amount:monto});
           }
 
           if (section==='cierre') {
-            if (c0up.includes('FECHA')||c1up.includes('FECHA')) paydate = c(3)||c(1);
-            if (c0up.includes('NOTA')||c1up.includes('NOTA')) notes = c(3)||c(1);
+            if (c1up.includes('FECHA')) paydate = c(3);
+            if (c1up.includes('NOTA')) notes = c(3);
           }
         });
 
