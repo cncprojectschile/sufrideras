@@ -5,7 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sufrideras Eurohinca 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// Load SheetJS with fallback CDNs
+(function(){
+  function loadScript(src, fallback) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onerror = function() { if(fallback) loadScript(fallback); };
+    document.head.appendChild(s);
+  }
+  loadScript(
+    'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js',
+    'https://unpkg.com/xlsx/dist/xlsx.full.min.js'
+  );
+})();
+</script>
 <style>
 /* ── AUTH LAYER ───────────────────────────────────── */
 #auth-layer {
@@ -1067,7 +1081,6 @@ function showSync(msg, color='var(--text3)') {
 }
 
 async function saveData() {
-  // Save to localStorage as backup
   localStorage.setItem('sufrideras_data', JSON.stringify(data));
   showSync('⟳ Guardando...', 'var(--accent)');
   try {
@@ -1077,18 +1090,16 @@ async function saveData() {
         'Content-Type': 'application/json',
         'apikey': SUPA_KEY,
         'Authorization': `Bearer ${SUPA_KEY}`,
-        'Prefer': 'return=minimal'
+        'Prefer': 'return=minimal',
+        'x-client-info': 'sufrideras'
       },
       body: JSON.stringify({ data: data, updated_at: new Date().toISOString() })
     });
-    if (res.ok) {
-      showSync('✓ Guardado en nube', 'var(--green)');
-    } else {
-      showSync('⚠ Error al guardar', 'var(--red)');
-    }
+    if (res.ok) showSync('✓ Guardado en nube', 'var(--green)');
+    else { console.error('Save error:', res.status, await res.text()); showSync('⚠ Error al guardar', 'var(--red)'); }
   } catch(e) {
     showSync('⚠ Sin conexión', 'var(--red)');
-    console.warn('Error guardando en nube:', e);
+    console.warn('Error guardando:', e);
   }
 }
 
@@ -1097,16 +1108,17 @@ async function loadFromCloud() {
     const res = await fetch(`${SUPA_URL}/rest/v1/sufrideras_data?id=eq.main&select=data`, {
       headers: {
         'apikey': SUPA_KEY,
-        'Authorization': `Bearer ${SUPA_KEY}`
+        'Authorization': `Bearer ${SUPA_KEY}`,
+        'x-client-info': 'sufrideras'
       }
     });
+    if (!res.ok) { console.error('Load error:', res.status, await res.text()); return; }
     const rows = await res.json();
     if (rows && rows[0] && rows[0].data && rows[0].data.weeks && rows[0].data.weeks.length > 0) {
-      // Cloud has data — use it
       data = rows[0].data;
       localStorage.setItem('sufrideras_data', JSON.stringify(data));
     } else {
-      // Cloud is empty — upload local data
+      // Upload local data to cloud
       await fetch(`${SUPA_URL}/rest/v1/sufrideras_data?id=eq.main`, {
         method: 'PATCH',
         headers: {
@@ -1119,7 +1131,7 @@ async function loadFromCloud() {
       });
     }
   } catch(e) {
-    console.warn('Error cargando desde nube, usando datos locales:', e);
+    console.warn('Error cargando desde nube:', e);
   }
 }
 
