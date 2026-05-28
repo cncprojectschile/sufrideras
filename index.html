@@ -2130,137 +2130,127 @@ function importExcel(input) {
   reader.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const weekSheets = wb.SheetNames.filter(n => /[Ss]emana[_\s]?\d+/.test(n));
+      if (weekSheets.length === 0) {
+        alert(`No se encontraron hojas de semana.\nHojas en el archivo: ${wb.SheetNames.join(', ')}\n\nAsegúrate de usar la plantilla oficial.`);
+        input.value = ''; return;
+      }
       let imported = 0;
-      wb.SheetNames.forEach(name => {
-        const m = name.match(/[Ss]emana[_\s]?(\d+)/);
+      weekSheets.forEach(name => {
+        const m = name.match(/(\d+)/);
         if (!m) return;
         const num = parseInt(m[1]);
         const ws = wb.Sheets[name];
         const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
-        // Parse period from title row (row index 1 = Excel row 2)
-        const titleRow = (rows[1]||[''])[0]+'';
-        const periodMatch = titleRow.match(/\d{2}-\d{2}-\d{2}.+\d{2}-\d{2}-\d{2}/);
-        // Also check the period input row (row index 2)
-        const periodRow = (rows[2]||[''])[1]+'';
-        const period = periodMatch ? periodMatch[0] : (periodRow || '');
-
-        let bruto=null, palets=null, paydate='', notes='';
-        const workerMap = {};
-        const gruasServicio=[], basuraServicio=[], extras=[];
-
-        // State machine
-        let section = null;      // 'workers','gruas','basura','extras','cierre'
-        let currentWorker = null; // worker id being parsed
-        let currentAdvances = []; // accumulate advances for current worker
+        let period='', bruto=null, palets=null, paydate='', notes='';
+        const workerMap={}, gruasServicio=[], basuraServicio=[], extras=[];
+        let section=null, currentWorker=null, currentAdvances=[];
 
         const saveWorker = () => {
-          if (currentWorker) {
-            const existing = workerMap[currentWorker];
-            if (existing) existing.advances = currentAdvances.filter(a=>a.amount>0);
-          }
-          currentAdvances = [];
+          if (currentWorker && workerMap[currentWorker])
+            workerMap[currentWorker].advances = currentAdvances.filter(a=>a.amount>0);
+          currentAdvances=[];
         };
 
-        rows.forEach((row, ri) => {
-          const col0 = (row[0]+'').trim();
-          const col1 = (row[1]+'').trim();
-          const col0up = col0.toUpperCase();
+        rows.forEach(row => {
+          // Flatten: convert all cells to trimmed strings for detection
+          const c = i => (row[i]!==undefined ? (row[i]+'').trim() : '');
+          const c0up = c(0).toUpperCase();
+          const c1up = c(1).toUpperCase();
 
-          // Detect section headers
-          if (col0up.includes('PRODUCCIÓN') || col0up.includes('PRODUCCION')) { section='prod'; return; }
-          if (col0up.includes('TRABAJADOR')) { section='workers'; return; }
-          if (col0up.includes('GRÚA') || col0up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (col0up.includes('BOTE DE BASURA') || col0up.includes('BASURA')) { section='basura'; return; }
-          if (col0up.includes('GASTOS ADICIONALES') || col0up.includes('GASTOS')) { section='extras'; return; }
-          if (col0up.includes('CIERRE')) { section='cierre'; return; }
-          if (col0up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
-          if (col0up.includes('TOTAL')) return; // skip total rows
+          // Section detection — check col A and col B
+          if (c0up.includes('PRODUCCIÓN')||c0up.includes('PRODUCCION')||c1up.includes('PRODUCCIÓN')) { section='prod'; return; }
+          if (c0up.includes('TRABAJADOR')||c1up.includes('TRABAJADOR')) { section='workers'; return; }
+          if (c0up.includes('GRÚA')||c0up.includes('GRUA')||c1up.includes('GRÚA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c0up.includes('BOTE')||c0up.includes('BASURA')||c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
+          if (c0up.includes('GASTOS')||c1up.includes('GASTOS')) { section='extras'; return; }
+          if (c0up.includes('CIERRE')||c1up.includes('CIERRE')) { section='cierre'; return; }
+          if (c0up.includes('TOTAL MANO')||c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
+          if (c0up.startsWith('TOTAL')||c1up.startsWith('TOTAL')) return;
 
-          if (section === 'prod') {
-            if (col0up.includes('PIEZAS') && row[4]) bruto = parseInt(row[4])||null;
-            if (col0up.includes('PALET') && row[4]) palets = parseInt(row[4])||null;
+          // Period — from title row or period row
+          if (!period) {
+            const full = row.join(' ');
+            const pm = full.match(/\d{2}-\d{2}-\d{2}\s+al\s+\d{2}-\d{2}-\d{2}/);
+            if (pm) period = pm[0];
           }
 
-          if (section === 'workers') {
-            // Check if this row is a worker name row (col B = name, col D = days)
-            const wMatch = WORKERS.find(w => col0.toLowerCase().includes(w.id) ||
-                                             col1.toLowerCase().includes(w.id));
-            if (wMatch && row[2] && !col0up.includes('ADELANTO')) {
+          if (section==='prod') {
+            if (c0up.includes('PIEZAS')||c1up.includes('PIEZAS')) bruto = parseInt(c(4))||parseInt(c(2))||null;
+            if (c0up.includes('PALET')||c1up.includes('PALET')) palets = parseInt(c(4))||parseInt(c(2))||null;
+          }
+
+          if (section==='workers') {
+            // Worker header row: col B = name, col D = days, col E = bonus
+            const nameCell = c(1);
+            const wMatch = WORKERS.find(w => nameCell.toLowerCase().includes(w.id));
+            if (wMatch && !c0up.includes('ADELANTO') && !c1up.includes('ADELANTO') && !c1up.includes('DÍA')) {
               saveWorker();
               currentWorker = wMatch.id;
-              workerMap[wMatch.id] = {
-                days:  parseInt(row[3]) || 5,
-                bonus: parseInt(row[4]) || 0,
-                advances: []
-              };
+              workerMap[wMatch.id] = { days: parseInt(c(3))||5, bonus: parseInt(c(4))||0, advances:[] };
               return;
             }
-            // Check if this row is an adelanto row (col B starts with "Adelanto")
-            if (col0.toLowerCase().includes('adelanto') || col1.toLowerCase().includes('adelanto')) {
-              // col D = fecha/día, col F = monto (col index 3,6)
-              const fecha = (row[3]+'').trim();
-              const monto = parseInt(row[6]) || 0;
-              if (fecha || monto) currentAdvances.push({ date: fecha, amount: monto });
-              return;
+            // Adelanto row: col A or B contains "Adelanto", col D=fecha, col G=monto
+            if (c0up.includes('ADELANTO')||c1up.includes('ADELANTO')) {
+              const fecha = c(3);
+              const monto = parseInt(c(6))||parseInt(c(7))||0;
+              if (fecha||monto) currentAdvances.push({date:fecha, amount:monto});
             }
           }
 
-          if (section === 'gruas') {
-            // col B=empresa, col D=fecha, col E=desc, col G=monto
-            const empresa = (row[1]+'').trim();
-            const monto   = parseInt(row[6]) || parseInt(row[7]) || 0;
-            if (empresa && monto) {
-              gruasServicio.push({
-                empresa, fecha: (row[3]+'').trim(),
-                desc: (row[4]+'').trim(), monto
-              });
-            }
+          if (section==='gruas') {
+            const empresa = c(1);
+            const monto = parseInt(c(6))||parseInt(c(7))||0;
+            if (empresa && monto && !c1up.includes('EMPRESA') && !c1up.includes('TOTAL'))
+              gruasServicio.push({empresa, fecha:c(3), desc:c(4), monto});
           }
 
-          if (section === 'basura') {
-            const fecha = (row[1]+'').trim();
-            const monto = parseInt(row[6]) || parseInt(row[7]) || 0;
-            if (fecha && monto) basuraServicio.push({ fecha, monto });
+          if (section==='basura') {
+            const fecha = c(1);
+            const monto = parseInt(c(6))||parseInt(c(7))||0;
+            if (fecha && monto && !c1up.includes('FECHA') && !c1up.includes('TOTAL'))
+              basuraServicio.push({fecha, monto});
           }
 
-          if (section === 'extras') {
-            const desc  = (row[1]+'').trim();
-            const monto = parseInt(row[6]) || parseInt(row[7]) || 0;
-            if (desc && monto) extras.push({ desc, date:(row[4]+'').trim(), amount: monto });
+          if (section==='extras') {
+            const desc = c(1);
+            const monto = parseInt(c(6))||parseInt(c(7))||0;
+            if (desc && monto && !c1up.includes('DESCRIPCIÓN') && !c1up.includes('TOTAL'))
+              extras.push({desc, date:c(4), amount:monto});
           }
 
-          if (section === 'cierre') {
-            if (col0up.includes('FECHA')) paydate = (row[3]+'').trim() || (row[1]+'').trim();
-            if (col0up.includes('NOTAS') || col0up.includes('NOTA')) notes = (row[3]+'').trim() || (row[1]+'').trim();
+          if (section==='cierre') {
+            if (c0up.includes('FECHA')||c1up.includes('FECHA')) paydate = c(3)||c(1);
+            if (c0up.includes('NOTA')||c1up.includes('NOTA')) notes = c(3)||c(1);
           }
         });
 
-        saveWorker(); // save last worker
-        WORKERS.forEach(w => { if (!workerMap[w.id]) workerMap[w.id] = { days:5, bonus:0, advances:[] }; });
+        saveWorker();
+        WORKERS.forEach(w => { if (!workerMap[w.id]) workerMap[w.id]={days:5,bonus:0,advances:[]}; });
 
-        const existing = data.weeks.findIndex(w => w.num === num);
+        const existing = data.weeks.findIndex(w => w.num===num);
         const weekObj = {
-          id: existing >= 0 ? data.weeks[existing].id : Date.now() + num,
+          id: existing>=0 ? data.weeks[existing].id : Date.now()+num,
           num, period, bruto, palets,
           workers: workerMap,
           gruasServicio, basuraServicio, extras,
-          total: 0, paydate, notes
+          total:0, paydate, notes
         };
         weekObj.total = getWorkerTotal(weekObj)+getGruasWeekTotal(weekObj)+getBasuraWeekTotal(weekObj)+getExtrasTotal(weekObj);
-        if (existing >= 0) data.weeks[existing] = weekObj;
+        if (existing>=0) data.weeks[existing]=weekObj;
         else data.weeks.push(weekObj);
         data.weeks.sort((a,b)=>a.num-b.num);
         imported++;
       });
 
-      if (imported > 0) {
+      if (imported>0) {
         saveData();
         renderDashboard();
         renderSemanas();
         alert(`✅ Se importaron ${imported} semana(s) correctamente.`);
       } else {
-        alert('No se encontraron hojas de semana en el archivo.\nAsegúrate de usar la plantilla oficial.');
+        alert('No se pudieron leer los datos. Verifica que el archivo sea la plantilla oficial.');
       }
     } catch(err) {
       alert('Error al leer el archivo: ' + err.message);
