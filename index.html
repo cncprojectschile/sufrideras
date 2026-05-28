@@ -2188,8 +2188,8 @@ function doImport(file, input) {
           // Section detection — all headers are in col B
           if (c1up.includes('PRODUCCIÓN')||c1up.includes('PRODUCCION')) { section='prod'; return; }
           if (c1up.includes('TRABAJADOR')) { section='workers'; return; }
-          if (c1up.includes('GRÚA')||c1up.includes('GRUA')) { saveWorker(); currentWorker=null; section='gruas'; return; }
-          if (c1up.includes('BOTE')||c1up.includes('BASURA')) { section='basura'; return; }
+          if (c1up.includes('GR\u00DAA')||c1up.includes('GRUA')||c1up.includes('SERVICIO DE G')||c1.includes('🚛')) { saveWorker(); currentWorker=null; section='gruas'; return; }
+          if (c1up.includes('BOTE')||c1up.includes('BASURA')||c1.includes('🗑')) { section='basura'; return; }
           if (c1up.includes('GASTOS')) { section='extras'; return; }
           if (c1up.includes('CIERRE')) { section='cierre'; return; }
           if (c1up.includes('TOTAL MANO')) { saveWorker(); currentWorker=null; return; }
@@ -2227,7 +2227,7 @@ function doImport(file, input) {
             // col B=empresa (idx1), col D=fecha (idx3), col E=desc (idx4), col G=monto (idx6)
             const empresa = c1;
             const monto = parseInt(c(6))||0;
-            if (empresa && monto)
+            if (empresa && monto > 0)
               gruasServicio.push({empresa, fecha:c(3), desc:c(4), monto});
           }
 
@@ -2235,14 +2235,14 @@ function doImport(file, input) {
             // col B=fecha (idx1), col G=monto (idx6)
             const fecha = c1;
             const monto = parseInt(c(6))||0;
-            if (fecha && monto) basuraServicio.push({fecha, monto});
+            if (fecha && monto > 0) basuraServicio.push({fecha, monto});
           }
 
           if (section==='extras') {
             // col B=desc (idx1), col E=fecha (idx4), col G=monto (idx6)
             const desc = c1;
             const monto = parseInt(c(6))||0;
-            if (desc && monto) extras.push({desc, date:c(4), amount:monto});
+            if (desc && monto > 0) extras.push({desc, date:c(4), amount:monto});
           }
 
           if (section==='cierre') {
